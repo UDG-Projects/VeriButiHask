@@ -21,13 +21,23 @@ partida1=[Carta Manilla Bastos, Carta Sota Bastos, Carta As Bastos, Carta Dos Ba
 basa1=[Carta Sota Bastos, Carta As Bastos, Carta Manilla Bastos, Carta Dos Bastos]
 
 data Pal = Bastos | Copes | Oros | Espases deriving (Show)
-
 instance Eq Pal where
   Bastos == Bastos    = True
   Oros == Oros        = True
   Copes == Copes      = True
   Espases == Espases  = True
   _ == _              = False
+
+
+data Trumfu = Butifarra | Pal Pal
+instance Eq Trumfu where
+  Butifarra == Butifarra  = True
+  Pal p1 == Pal p2        = p1 == p2
+  _ == _                  = False
+instance Show Trumfu where
+  show (Butifarra) = "Butifarra"
+  show (Pal pal)   = show pal
+
 
 data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Ord)
 instance Eq TipusCarta where
@@ -46,24 +56,31 @@ instance Eq TipusCarta where
   _ == _              = False
 
 data Carta = Carta TipusCarta Pal
-
 instance Eq Carta where
   Carta te pe == Carta td pd = (te == td) && (pe == pd)
-
 instance Show Carta where
   show (Carta a Bastos) = show a ++ " de " ++ show Bastos
   show (Carta a Copes) = show a ++ " de " ++ show Copes
   show (Carta a b)   = show a ++ " d'" ++ show b
-
 instance Ord Carta where
   (Carta te pe) <= (Carta td pd) = te <= td
+
+
 -- Funcions -------------------------------------------------------------------------------
+
+-- Pre : 0 < [x && y] < 5
+-- Post : [1-4] referent al proper a tirar.
+quiSortira :: Int -> Int -> Int
+quiSortira x y
+  | modul == 0 = 4
+  | otherwise = modul
+  where
+    modul = ((mod) ((-) ((+) x y) 1) 4)
 
 -- Pre : Filtra les cartes d'un pal en concret
 -- Post : Cartes de pal PalDemanat o llista buida.
 cartesPal :: [Carta] -> Pal -> [Carta]
-cartesPal ll palDemanat = [ (Carta t pal) | (Carta t pal) <- ll, pal == palDemanat ]
--- cartesPal ll palDemanat = filter ((Carta  palDemanat)==) ll
+cartesPal ll palDemanat = filter (\(Carta t p)->p == palDemanat) ll
 
 -- Pre : Llista != []
 -- Post : Retorna el pal guanyador donat llista de cartes i trumfo
@@ -80,4 +97,37 @@ quiGuanya ll trumfo =  (cartaGuanyadora, (head [index | (index, carta) <- zip [1
     palGuanyador = palGuanyadorBasa ll trumfo
     cartaGuanyadora = maximum (cartesPal ll palGuanyador)
 
--- findPos list elt = [index | (index, e) <- zip [0..] list, e == elt]
+
+
+-- Pre :
+-- Post :
+-- trampa :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
+-- trampa ll trumfo jugades jug = Nothing
+
+-- Pre :
+-- Post :
+jugades :: [Carta] -> Trumfu -> [Carta] -> [Carta]
+jugades cartesJugador _ [] = cartesJugador
+jugades cartesJugador (Pal trumfu) [(Carta tc p)] =
+  if length (cartesPal cartesJugador p) > 0  then
+    if length (filter (\carta -> carta > (Carta tc p)) (cartesPal cartesJugador p)) > 0 then filter (\carta -> carta > (Carta tc p)) (cartesPal cartesJugador p)
+    else cartesPal cartesJugador p
+  else if length (cartesPal cartesJugador trumfu) > 0 then cartesPal cartesJugador trumfu
+  else cartesJugador
+jugades cartesJugador (Pal trumfu) [(Carta tc1 p1), (Carta tc1, p2)] =
+  if length (cartesPal cartesJugador p1) > 0  then
+    if length (filter (\carta -> carta > (Carta tc p1)) (cartesPal cartesJugador p1)) > 0 then filter (\carta -> carta > (Carta tc1 p1)) (cartesPal cartesJugador p1)
+    else cartesPal cartesJugador p
+  else if length (cartesPal cartesJugador trumfu) > 0 then
+    if length (filter (\carta -> carta > (Carta tc p)) (cartesPal cartesJugador trumfu)) > 0 then filter (\carta -> carta > (Carta tc p)) (cartesPal cartesJugador trumfu)
+    else cartesPal cartesJugador trumfu
+  else cartesJugador
+--jugades cartesJugador (Butifarra) ((Carta tc p):xs) = if length mateixPal > 0 then mateixPal else cartesJugador  -- Falta definir filtre mateixpal
+--  where
+--    mateixPal = cartesPal cartesJugador p
+--jugades cartesJugador (Pal trumfu) ((Carta tc p):xs) = if length mateixPal > 0 then if (snd guanyadorActual) ==
+--  where
+--    guanyadorActual = quiGuanya basa trumfu
+--    mateixPal = cartesPal cartesJugador p
+--    trumfos   = cartesPal cartesJugador trumfu
+--(Carta tc p)
