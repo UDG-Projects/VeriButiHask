@@ -12,7 +12,7 @@ cartesMod = [
   [Carta Dos Bastos, Carta Tres Bastos, Carta Dos Espases, Carta Dos Copes, Carta Sis Bastos, Carta Set Espases, Carta Tres Oros, Carta Quatre Oros, Carta Rei Bastos, Carta Cavall Oros, Carta Manilla Oros, Carta Sota Espases]]
 
 
-partida1=[Carta Manilla Bastos, Carta Sota Bastos, Carta As Bastos, Carta Dos Bastos,
+partida1=[Carta Manilla Bastos, Carta Sota Bastos,  Carta As Bastos, Carta Dos Bastos,
  Carta Vuit Bastos, Carta Cavall Bastos, Carta Dos Oros, Carta Tres Bastos,
  Carta Rei Espases, Carta Dos Espases, Carta Tres Espases, Carta Manilla Espases,
  Carta Vuit Copes, Carta Cavall Copes, Carta Dos Copes, Carta As Copes,
@@ -84,8 +84,8 @@ quiSortira x y
   where
     modul = ((mod) ((-) ((+) x y) 1) 4)
 
--- Pre :
--- Post :
+-- Pre : Mira si la primera carta mata a la segona
+-- Post : Si la primera carta mata a la segona retorna true, false altrament, té en compte el trumfo de la partida.
 mata :: Trumfu -> Carta -> Carta  -> Bool
 mata trumfu (Carta tc1 pal1) (Carta tc2 pal2)
   | trumfu == Butifarra = (pal1 == pal2) && ((Carta tc1 pal1) < (Carta tc2 pal2))
@@ -119,21 +119,21 @@ saDeMatar posGuanya posMeu
   | posMeu - 2 > 0 = posMeu - 2 /= posGuanya
   | otherwise = True
 
+selecciona :: Bool -> [Carta] -> [Carta] -> [Carta]
+selecciona b l1 l2 = if b then l1 else l2
+
 jugades :: [Carta] -> Trumfu -> [Carta] -> [Carta]
 jugades cartesJugador _ [] = cartesJugador
 jugades cartesJugador trumfu ll =
   if (\(Carta tc pal)->pal== palBasa) (fst guanyador) then
     if (length cartesJugadorPalBasa) > 0 then
-      if esticObligatAMatar && (length (cartesJugadorMatenPalBasa) > 0) then cartesJugadorMatenPalBasa
-      else cartesJugadorPalBasa
+      selecciona (esticObligatAMatar && (length (cartesJugadorMatenPalBasa) > 0)) cartesJugadorMatenPalBasa cartesJugadorPalBasa
     else
-      if esticObligatAMatar && ((length cartesJugadorMaten) > 0) then cartesJugadorMaten
-      else cartesJugador
+      selecciona ( esticObligatAMatar && ((length cartesJugadorMaten) > 0)) cartesJugadorMaten cartesJugador
   else
     if (length cartesJugadorPalBasa) > 0 then cartesJugadorPalBasa
     else
-      if esticObligatAMatar && (length cartesJugadorMaten) > 0 then cartesJugadorMaten
-      else cartesJugador
+      selecciona (esticObligatAMatar && (length cartesJugadorMaten) > 0) cartesJugadorMaten cartesJugador
   where
     guanyador = quiGuanya ll trumfu
     esticObligatAMatar = saDeMatar (snd guanyador) ((length ll) + 1)
@@ -145,33 +145,18 @@ jugades cartesJugador trumfu ll =
 
 -- Pre :
 -- Post :
--- trampa :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
--- trampa ll trumfo jugades jug = Nothing
-
--- Pre :
--- Post :
---jugades :: [Carta] -> Trumfu -> [Carta] -> [Carta]
---jugades cartesJugador _ [] = cartesJugador
---jugades cartesJugador (Pal trumfu) [(Carta tc p)] =
---  if length (cartesPal cartesJugador p) > 0  then
---    if length (filter (\carta -> carta > (Carta tc p)) (cartesPal cartesJugador p)) > 0 then filter (\carta -> carta > (Carta tc p)) (cartesPal cartesJugador p)
---    else cartesPal cartesJugador p
---  else if length (cartesPal cartesJugador trumfu) > 0 then cartesPal cartesJugador trumfu
---  else cartesJugador
---jugades cartesJugador (Pal trumfu) [(Carta tc1 p1), (Carta tc1, p2)] =
---  if length (cartesPal cartesJugador p1) > 0  then
---    if length (filter (\carta -> carta > (Carta tc p1)) (cartesPal cartesJugador p1)) > 0 then filter (\carta -> carta > (Carta tc1 p1)) (cartesPal cartesJugador p1)
---    else cartesPal cartesJugador p
---  else if length (cartesPal cartesJugador trumfu) > 0 then
---    if length (filter (\carta -> carta > (Carta tc p)) (cartesPal cartesJugador trumfu)) > 0 then filter (\carta -> carta > (Carta tc p)) (cartesPal cartesJugador trumfu)
---    else cartesPal cartesJugador trumfu
---  else cartesJugador
---jugades cartesJugador (Butifarra) ((Carta tc p):xs) = if length mateixPal > 0 then mateixPal else cartesJugador  -- Falta definir filtre mateixpal
---  where
---    mateixPal = cartesPal cartesJugador p
---jugades cartesJugador (Pal trumfu) ((Carta tc p):xs) = if length mateixPal > 0 then if (snd guanyadorActual) ==
---  where
---    guanyadorActual = quiGuanya basa trumfu
---    mateixPal = cartesPal cartesJugador p
---    trumfos   = cartesPal cartesJugador trumfu
---(Carta tc p)
+trampa :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
+trampa _ trumfu [] jug = Nothing
+trampa ll trumfu (c1:c2:c3:c4:pila) jug =
+  if or [fst x | x<-hiHaTrampa] then Just ([c1,c2,c3,c4], (12 - (length (head ll))) + 1 , (head [snd x | x<-hiHaTrampa, (fst x)]) + 1)
+  else trampa [(filter (/=c1) (ll!!(mod (jug - 1) 4))),
+                (filter (/=c2) (ll!!(mod (jug) 4))),
+                (filter (/=c3) (ll!!(mod (jug + 1) 4))),
+                (filter (/=c4) (ll!!(mod (jug + 2) 4)))] trumfu pila (snd (quiGuanya [c1,c2,c3,c4] trumfu))
+  where
+    -- Mirem que les cartes estiguin dintre de jugades
+    jugades1 = jugades (ll!!(mod (jug - 1) 4)) trumfu []
+    jugades2 = jugades (ll!!(mod (jug) 4))     trumfu [c1]
+    jugades3 = jugades (ll!!(mod (jug + 1) 4)) trumfu [c1,c2]
+    jugades4 = jugades (ll!!(mod (jug + 2) 4)) trumfu [c1,c2,c3]
+    hiHaTrampa = [((notElem c1 jugades1),(mod (jug - 1) 4)),((notElem c2 jugades2),(mod (jug) 4)), ((notElem c3 jugades3),(mod (jug + 1) 4)),((notElem c4 jugades4),(mod (jug + 2) 4))]
