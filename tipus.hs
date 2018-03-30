@@ -72,8 +72,16 @@ instance Show Carta where
 instance Ord Carta where
   (Carta te pe) <= (Carta td pd) = te <= td
 
-
 -- Funcions -------------------------------------------------------------------------------
+
+valor :: Carta -> Int
+valor (Carta tc _)
+  | tc == Manilla = 5
+  | tc == As      = 4
+  | tc == Rei     = 3
+  | tc == Cavall  = 2
+  | tc == Sota    = 1
+  | otherwise     = 0
 
 -- Pre : 0 < [x && y] < 5
 -- Post : [1-4] referent al proper a tirar.
@@ -160,3 +168,19 @@ trampa ll trumfu (c1:c2:c3:c4:pila) jug =
     jugades3 = jugades (ll!!(mod (jug + 1) 4)) trumfu [c1,c2]
     jugades4 = jugades (ll!!(mod (jug + 2) 4)) trumfu [c1,c2,c3]
     hiHaTrampa = [((notElem c1 jugades1),(mod (jug - 1) 4)),((notElem c2 jugades2),(mod (jug) 4)), ((notElem c3 jugades3),(mod (jug + 1) 4)),((notElem c4 jugades4),(mod (jug + 2) 4))]
+
+cartesGuanyades::  Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
+cartesGuanyades trumfu [] jugador = ([],[])
+cartesGuanyades trumfu (c1:c2:c3:c4:pila) jugador
+  | (mod seguentJug 2) /= 0 = (basa ++ (fst res), (snd res))
+  | otherwise = ((fst res), basa ++ (snd res))
+  where
+    basa = [c1,c2,c3,c4]
+    guanyador = quiGuanya basa trumfu
+    seguentJug = quiSortira jugador (snd guanyador)
+    res = (cartesGuanyades trumfu pila seguentJug)
+
+-- Pre :
+-- Post :
+punts :: [Carta] -> Int
+punts llista = sum [ (valor x) | x <- llista] + (div (length llista) 4)
