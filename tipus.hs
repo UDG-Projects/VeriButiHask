@@ -172,10 +172,11 @@ jugades cartesJugador trumfu ll =
 -- Pre :
 -- Post :
 extreu :: [[Carta]] -> [Carta] -> Int -> [[Carta]]
-extreu mans basa jug = [(filter (/=(cartaJugadorBasa basa jug 1)) (mans!!0)),
-                        (filter (/=(cartaJugadorBasa basa jug 2)) (mans!!1)),
-                        (filter (/=(cartaJugadorBasa basa jug 3)) (mans!!2)),
-                        (filter (/=(cartaJugadorBasa basa jug 4)) (mans!!3))]
+extreu mans basa jug = [filter (/=cartaJugadorBasa basa jug x) (mans!!(x - 1)) | x <- [1..4]]
+-- extreu mans basa jug = [(filter (/=(cartaJugadorBasa basa jug 1)) (mans!!0)),
+                        --(filter (/=(cartaJugadorBasa basa jug 2)) (mans!!1)),
+                        --(filter (/=(cartaJugadorBasa basa jug 3)) (mans!!2)),
+                        --(filter (/=(cartaJugadorBasa basa jug 4)) (mans!!3))]
 
 -- Pre :
 -- Post :
@@ -185,19 +186,23 @@ properATirar basa trumfu jug = (quiSortira jug (snd (quiGuanya basa trumfu)))
 -- Pre :
 -- Post :
 trampa :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
-trampa _ trumfu [] jug = Nothing
-trampa ll trumfu (c1:c2:c3:c4:pila) jug =
+trampa _ _ [] _ = Nothing
+trampa ll trumfu pila jug =
   if or [fst x | x<-hiHaTrampa] then
-    Just ([c1,c2,c3,c4], (12 - (length (head ll))) + 1 , (head [snd x | x<-hiHaTrampa, (fst x)]) + 1)
-  else trampa (extreu ll basa jug) trumfu pila (properATirar basa trumfu jug) --(quiSortira jug (snd (quiGuanya basa trumfu)))
+    Just (basa, (12 - (length (head ll))) + 1 , (head [snd x | x<-hiHaTrampa, (fst x)]) + 1)
+    --Just ((fst ( jugadesGen!!1)),(snd (jugadesGen!!2)),1)
+  else trampa (extreu ll basa jug) trumfu (drop 4 pila) (properATirar basa trumfu jug) --(quiSortira jug (snd (quiGuanya basa trumfu)))
   where
     -- Mirem que les cartes estiguin dintre de jugades
-    basa = [c1, c2, c3, c4]
-    jugades1 = jugades (ll!!(mod (jug - 1) 4)) trumfu []
-    jugades2 = jugades (ll!!(mod (jug) 4))     trumfu [c1]
-    jugades3 = jugades (ll!!(mod (jug + 1) 4)) trumfu [c1,c2]
-    jugades4 = jugades (ll!!(mod (jug + 2) 4)) trumfu [c1,c2,c3]
-    hiHaTrampa = [((notElem c1 jugades1),(mod (jug - 1) 4)),((notElem c2 jugades2),(mod (jug) 4)), ((notElem c3 jugades3),(mod (jug + 1) 4)),((notElem c4 jugades4),(mod (jug + 2) 4))]
+    basa = take 4 pila
+    hiHaTrampa= [((notElem (pila!!n) (jugades (ll!!(mod (jug + (n-1)) 4)) trumfu (take n pila))), (mod (jug +(n-1)) 4)) | n <-[0..3] ]
+    --jugadesGen= [((jugades (ll!!(mod (jug + (n-1)) 4)) trumfu (take n pila)), (mod (jug +(n-1)) 4)) | n <-[0..3] ]
+    --hiHaTrampa= [((notElem (pila!!n) (fst (jugadesGen!!n))), (snd (jugadesGen!!n))) |  n <- [0..3]]
+    --jugades1 = jugades (ll!!(mod (jug - 1) 4)) trumfu []
+    --jugades2 = jugades (ll!!(mod (jug) 4))     trumfu [c1]
+    --jugades3 = jugades (ll!!(mod (jug + 1) 4)) trumfu [c1,c2]
+    --jugades4 = jugades (ll!!(mod (jug + 2) 4)) trumfu [c1,c2,c3]
+    --hiHaTrampa = [((notElem c1 jugades1),(mod (jug - 1) 4)),((notElem c2 jugades2),(mod (jug) 4)), ((notElem c3 jugades3),(mod (jug + 1) 4)),((notElem c4 jugades4),(mod (jug + 2) 4))]
 
 -- Pre :
 -- Post :
@@ -251,20 +256,27 @@ reparteix [a,b,c,d] (c1:c2:c3:c4:pila) jugador
 -- Post :
 generarPartida :: [[Carta]] -> Trumfu -> Int -> [Carta]
 generarPartida [[],[],[],[]] _ _ = []
-generarPartida mans trumfu jug = [carta, carta2, carta3, carta4] ++ generarPartida (extreu mans basa jug) trumfu (properATirar basa trumfu jug)--(quiSortira (quiGuanya ))
+generarPartida mans trumfu jug = basa ++ generarPartida (extreu mans basa jug) trumfu (properATirar basa trumfu jug)--(quiSortira (quiGuanya ))
   where
-    jug1 = (jug - 1)
-    jug2 = ((seguentJugador jug) - 1)
-    jug3 = ((seguentJugador (seguentJugador jug)) - 1)
-    jug4 = ((seguentJugador (seguentJugador (seguentJugador jug))) - 1)
-    carta = maximum (jugades (mans!!jug1) trumfu [])
-    carta2 = maximum (jugades (mans!!jug2) trumfu [carta])
-    carta3 = maximum (jugades (mans!!jug3) trumfu [carta, carta2])
-    carta4 = maximum (jugades (mans!!jug4) trumfu [carta, carta2, carta3])
-    basa = [carta, carta2, carta3, carta4]
+    --jug1 = (jug - 1)
+    --jug2 = ((seguentJugador jug) - 1)
+    --jug3 = ((seguentJugador (seguentJugador jug)) - 1)
+    --jug4 = ((seguentJugador (seguentJugador (seguentJugador jug))) - 1)
+    --carta = maximum (jugades (mans!!jug1) trumfu [])
+    --carta2 = maximum (jugades (mans!!jug2) trumfu [carta])
+    --carta3 = maximum (jugades (mans!!jug3) trumfu [carta, carta2])
+    --carta4 = maximum (jugades (mans!!jug4) trumfu [carta, carta2, carta3])
+    --basa = [carta, carta2, carta3, carta4]
+    --basa= [ head cartes1!!n | n <- [0..3]]
+    basa= [ maximum (jugades (mans!!(mod (jug + (n-1)) 4)) trumfu (take n basa)) | n <-[0..3] ]
+
+
 
 main = do
   seed <- newStdGen
   let random = take 200 (randomRs (0 :: Int, 47) seed)
-  let mans = reparteix [[],[],[],[]] (barreja partida1 random) 2
-  print $ generarPartida mans (Pal Oros) 3
+  let quiReparteix = 2
+  let mans = reparteix [[],[],[],[]] (barreja partida1 random) quiReparteix
+  let pal = Butifarra
+  -- torna el jugador que comença el pal de la partida les mans dels jugadors del 1..4 i la partida
+  print $ ((seguentJugador quiReparteix), pal, mans, generarPartida mans (pal) (seguentJugador quiReparteix) )
