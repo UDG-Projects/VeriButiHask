@@ -1,3 +1,6 @@
+-- Imports
+import System.Random
+
 -- Constants
 cartes1 = [
   [Carta Manilla Bastos, Carta Vuit Bastos, Carta Tres Espases, Carta As Copes, Carta Quatre Bastos, Carta Cavall Espases, Carta Set Copes, Carta As Oros, Carta Cinc Bastos, Carta Sota Copes, Carta Quatre Espases, Carta Set Bastos],
@@ -27,6 +30,10 @@ partida1=[Carta Manilla Bastos, Carta Sota Bastos,  Carta As Bastos, Carta Dos B
 
 basa1=[Carta Sota Bastos, Carta As Bastos, Carta Manilla Bastos, Carta Dos Bastos]
 
+-- Random seed
+-- newRand = newStdGen
+
+-- Tipus
 data Pal = Bastos | Copes | Oros | Espases deriving (Show)
 instance Eq Pal where
   Bastos == Bastos    = True
@@ -74,6 +81,8 @@ instance Ord Carta where
 
 -- Funcions -------------------------------------------------------------------------------
 
+-- Pre :
+-- Post :
 valor :: Carta -> Int
 valor (Carta tc _)
   | tc == Manilla = 5
@@ -91,6 +100,16 @@ quiSortira x y
   | otherwise = modul
   where
     modul = ((mod) ((-) ((+) x y) 1) 4)
+
+seguentJugador :: Int -> Int
+seguentJugador jugador
+  | jugador == 4 = 1
+  | otherwise = jugador + 1
+
+cartaJugadorBasa :: [Carta] -> Int -> Int -> Carta
+cartaJugadorBasa (carta:pila) comenca jugador
+  | comenca == jugador = carta
+  | otherwise = cartaJugadorBasa pila (seguentJugador comenca) jugador
 
 -- Pre : Mira si la primera carta mata a la segona
 -- Post : Si la primera carta mata a la segona retorna true, false altrament, té en compte el trumfo de la partida.
@@ -150,25 +169,38 @@ jugades cartesJugador trumfu ll =
     cartesJugadorMaten = filter (mata trumfu (fst guanyador)) cartesJugador
     cartesJugadorMatenPalBasa = cartesPal cartesJugadorMaten palBasa
 
+-- Pre :
+-- Post :
+extreu :: [[Carta]] -> [Carta] -> Int -> [[Carta]]
+extreu mans basa jug = [(filter (/=(cartaJugadorBasa basa jug 1)) (mans!!0)),
+                        (filter (/=(cartaJugadorBasa basa jug 2)) (mans!!1)),
+                        (filter (/=(cartaJugadorBasa basa jug 3)) (mans!!2)),
+                        (filter (/=(cartaJugadorBasa basa jug 4)) (mans!!3))]
+
+-- Pre :
+-- Post :
+properATirar :: [Carta] -> Trumfu -> Int -> Int
+properATirar basa trumfu jug = (quiSortira jug (snd (quiGuanya basa trumfu)))
 
 -- Pre :
 -- Post :
 trampa :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
 trampa _ trumfu [] jug = Nothing
 trampa ll trumfu (c1:c2:c3:c4:pila) jug =
-  if or [fst x | x<-hiHaTrampa] then Just ([c1,c2,c3,c4], (12 - (length (head ll))) + 1 , (head [snd x | x<-hiHaTrampa, (fst x)]) + 1)
-  else trampa [(filter (/=c1) (ll!!(mod (jug - 1) 4))),
-                (filter (/=c2) (ll!!(mod (jug) 4))),
-                (filter (/=c3) (ll!!(mod (jug + 1) 4))),
-                (filter (/=c4) (ll!!(mod (jug + 2) 4)))] trumfu pila (snd (quiGuanya [c1,c2,c3,c4] trumfu))
+  if or [fst x | x<-hiHaTrampa] then
+    Just ([c1,c2,c3,c4], (12 - (length (head ll))) + 1 , (head [snd x | x<-hiHaTrampa, (fst x)]) + 1)
+  else trampa (extreu ll basa jug) trumfu pila (properATirar basa trumfu jug) --(quiSortira jug (snd (quiGuanya basa trumfu)))
   where
     -- Mirem que les cartes estiguin dintre de jugades
+    basa = [c1, c2, c3, c4]
     jugades1 = jugades (ll!!(mod (jug - 1) 4)) trumfu []
     jugades2 = jugades (ll!!(mod (jug) 4))     trumfu [c1]
     jugades3 = jugades (ll!!(mod (jug + 1) 4)) trumfu [c1,c2]
     jugades4 = jugades (ll!!(mod (jug + 2) 4)) trumfu [c1,c2,c3]
     hiHaTrampa = [((notElem c1 jugades1),(mod (jug - 1) 4)),((notElem c2 jugades2),(mod (jug) 4)), ((notElem c3 jugades3),(mod (jug + 1) 4)),((notElem c4 jugades4),(mod (jug + 2) 4))]
 
+-- Pre :
+-- Post :
 cartesGuanyades::  Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
 cartesGuanyades trumfu [] jugador = ([],[])
 cartesGuanyades trumfu (c1:c2:c3:c4:pila) jugador
@@ -184,3 +216,55 @@ cartesGuanyades trumfu (c1:c2:c3:c4:pila) jugador
 -- Post :
 punts :: [Carta] -> Int
 punts llista = sum [ (valor x) | x <- llista] + (div (length llista) 4)
+
+-- Pre :
+--Post :
+puntsParelles :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
+puntsParelles cartesJugadors trumfu partida jug
+  | trampa cartesJugadors trumfu partida jug == Nothing = Just (punts (fst resultatPartida), punts (snd resultatPartida))
+  | otherwise = Nothing 
+  where
+    resultatPartida = cartesGuanyades trumfu partida jug
+
+-- Pre :
+-- Post :
+canviaPosicio :: [Carta] -> Int -> [Carta]
+canviaPosicio cartes random = ((filter (/=(cartes!!random)) cartes) ++ [(cartes!!random)])
+
+-- Pre :
+-- Post :
+barreja :: [Carta] -> [Int] -> [Carta]
+barreja cartes random = foldl (canviaPosicio) (cartes) random
+
+-- Pre :
+-- Post :
+reparteix :: [[Carta]] -> [Carta] -> Int -> [[Carta]]
+reparteix mans [] jugador = mans
+reparteix [a,b,c,d] (c1:c2:c3:c4:pila) jugador
+  | jugador == 1 = reparteix [a ++ [c1,c2,c3,c4], b, c, d] pila (seguentJugador jugador)
+  | jugador == 2 = reparteix [a, b ++ [c1,c2,c3,c4], c, d] pila (seguentJugador jugador)
+  | jugador == 3 = reparteix [a, b, c ++ [c1,c2,c3,c4], d] pila (seguentJugador jugador)
+  | jugador == 4 = reparteix [a, b, c, d ++ [c1,c2,c3,c4]] pila (seguentJugador jugador)
+  | otherwise = [a,b,c,d]
+
+-- Pre :
+-- Post :
+generarPartida :: [[Carta]] -> Trumfu -> Int -> [Carta]
+generarPartida [[],[],[],[]] _ _ = []
+generarPartida mans trumfu jug = [carta, carta2, carta3, carta4] ++ generarPartida (extreu mans basa jug) trumfu (properATirar basa trumfu jug)--(quiSortira (quiGuanya ))
+  where
+    jug1 = (jug - 1)
+    jug2 = ((seguentJugador jug) - 1)
+    jug3 = ((seguentJugador (seguentJugador jug)) - 1)
+    jug4 = ((seguentJugador (seguentJugador (seguentJugador jug))) - 1)
+    carta = maximum (jugades (mans!!jug1) trumfu [])
+    carta2 = maximum (jugades (mans!!jug2) trumfu [carta])
+    carta3 = maximum (jugades (mans!!jug3) trumfu [carta, carta2])
+    carta4 = maximum (jugades (mans!!jug4) trumfu [carta, carta2, carta3])
+    basa = [carta, carta2, carta3, carta4]
+
+main = do
+  seed <- newStdGen
+  let random = take 200 (randomRs (0 :: Int, 47) seed)
+  let mans = reparteix [[],[],[],[]] (barreja partida1 random) 2
+  print $ generarPartida mans (Pal Oros) 3
