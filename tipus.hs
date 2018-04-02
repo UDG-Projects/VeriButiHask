@@ -34,14 +34,13 @@ basa1=[Carta Sota Bastos, Carta As Bastos, Carta Manilla Bastos, Carta Dos Basto
 -- newRand = newStdGen
 
 -- Tipus
-data Pal = Bastos | Copes | Oros | Espases deriving (Show)
+data Pal = Oros | Copes | Espases | Bastos deriving (Show, Enum)
 instance Eq Pal where
   Bastos == Bastos    = True
   Oros == Oros        = True
   Copes == Copes      = True
   Espases == Espases  = True
   _ == _              = False
-
 
 data Trumfu = Butifarra | Pal Pal
 instance Eq Trumfu where
@@ -53,7 +52,7 @@ instance Show Trumfu where
   show (Pal pal)   = show pal
 
 
-data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Ord)
+data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Ord, Enum)
 instance Eq TipusCarta where
   Dos == Dos          = True
   Tres == Tres        = True
@@ -69,6 +68,7 @@ instance Eq TipusCarta where
   Manilla == Manilla  = True
   _ == _              = False
 
+
 data Carta = Carta TipusCarta Pal
 instance Eq Carta where
   Carta te pe == Carta td pd = (te == td) && (pe == pd)
@@ -78,11 +78,15 @@ instance Show Carta where
   show (Carta a b)   = show a ++ " d'" ++ show b
 instance Ord Carta where
   (Carta te pe) <= (Carta td pd) = te <= td
+instance Enum Carta where
+  toEnum x = (Carta (toEnum (mod x 12)) (toEnum (div x 12)))
+  fromEnum (Carta tipus pal) = ((fromEnum tipus)) + ((fromEnum pal) * 12)
+
 
 -- Funcions -------------------------------------------------------------------------------
 
--- Pre :
--- Post :
+-- Pre : Donada una carta
+-- Post : Retorna el seu valor en punts
 valor :: Carta -> Int
 valor (Carta tc _)
   | tc == Manilla = 5
@@ -101,11 +105,15 @@ quiSortira x y
   where
     modul = ((mod) ((-) ((+) x y) 1) 4)
 
+-- Pre : Donat el número d'un jugador
+-- Post : Retorna el número del següent jugador
 seguentJugador :: Int -> Int
 seguentJugador jugador
   | jugador == 4 = 1
   | otherwise = jugador + 1
 
+-- Pre : Donada una basa, el jugador que l'ha començat i el jugador que volem saber que ha tirat
+-- Post : Retorna la carta jugada per jugador sent comenca qui ha començat la basa
 cartaJugadorBasa :: [Carta] -> Int -> Int -> Carta
 cartaJugadorBasa (carta:pila) comenca jugador
   | comenca == jugador = carta
@@ -117,6 +125,28 @@ mata :: Trumfu -> Carta -> Carta  -> Bool
 mata trumfu (Carta tc1 pal1) (Carta tc2 pal2)
   | trumfu == Butifarra = (pal1 == pal2) && ((Carta tc1 pal1) < (Carta tc2 pal2))
   | otherwise = ((pal1 == pal2) && (Carta tc1 pal1) < (Carta tc2 pal2)) || ((pal1 /= pal2) && ((\(Pal p)->p == pal2) trumfu))
+
+-- Pre : Donada una carta
+-- Post : Retorna si és possible que hi hagi una carta superior del mateix pal
+teCartaMajorDelPal :: Carta -> Bool
+teCartaMajorDelPal (Carta x pal)
+  | x == Manilla = False
+  | otherwise = True
+
+-- Pre : Donada una carta (Havent validat si té major amb teCartaMajorDelPal)
+-- Post : Retorna la carta següent en l'escala de valors
+cartaSeguentMajor :: Carta -> Carta
+cartaSeguentMajor (Carta x p)
+  | x == As       = (Carta Manilla p)
+  | x == Dos      = (Carta Tres p)
+  | x == Tres     = (Carta Quatre p)
+  | x == Quatre   = (Carta Cinc p)
+  | x == Cinc     = (Carta Sis p)
+  | x == Sis      = (Carta Set p)
+  | x == Set      = (Carta Vuit p)
+  | x == Vuit     = (Carta Sota p)
+  | x == Sota     = (Carta Cavall p)
+  | x == Cavall   = (Carta Rei p)
 
 -- Pre : Filtra les cartes d'un pal en concret
 -- Post : Cartes de pal PalDemanat o llista buida.
@@ -146,9 +176,13 @@ saDeMatar posGuanya posMeu
   | posMeu - 2 > 0 = posMeu - 2 /= posGuanya
   | otherwise = True
 
+-- Pre : Donada una condició i dues llistes
+-- Post : Escull l1 si b i l2 si no b
 selecciona :: Bool -> [Carta] -> [Carta] -> [Carta]
 selecciona b l1 l2 = if b then l1 else l2
 
+-- Pre :
+-- Post :
 jugades :: [Carta] -> Trumfu -> [Carta] -> [Carta]
 jugades cartesJugador _ [] = cartesJugador
 jugades cartesJugador trumfu ll =
@@ -169,8 +203,8 @@ jugades cartesJugador trumfu ll =
     cartesJugadorMaten = filter (mata trumfu (fst guanyador)) cartesJugador
     cartesJugadorMatenPalBasa = cartesPal cartesJugadorMaten palBasa
 
--- Pre :
--- Post :
+-- Pre : Donades les mans dels jugadors, la basa i qui ha començat a jugar la basa
+-- Post : Retorna les mans dels jugadors sense les cartes que s'han jugat a la basa
 extreu :: [[Carta]] -> [Carta] -> Int -> [[Carta]]
 extreu mans basa jug = [filter (/=cartaJugadorBasa basa jug x) (mans!!(x - 1)) | x <- [1..4]]
 -- extreu mans basa jug = [(filter (/=(cartaJugadorBasa basa jug 1)) (mans!!0)),
@@ -178,13 +212,13 @@ extreu mans basa jug = [filter (/=cartaJugadorBasa basa jug x) (mans!!(x - 1)) |
                         --(filter (/=(cartaJugadorBasa basa jug 3)) (mans!!2)),
                         --(filter (/=(cartaJugadorBasa basa jug 4)) (mans!!3))]
 
--- Pre :
--- Post :
+-- Pre : Donada una basa, el trumfu i el primer que ha jugat
+-- Post : Retorna el jugador que començarà la següent basa
 properATirar :: [Carta] -> Trumfu -> Int -> Int
 properATirar basa trumfu jug = (quiSortira jug (snd (quiGuanya basa trumfu)))
 
--- Pre :
--- Post :
+-- Pre : Donades les mans dels jugadors, el trumfu de la partida, la partida sencera i qui ha començat jugant
+-- Post : Retorna Nothing si no hi ha hagut trmapa o Just (basa on hi ha la trampa, numero de basa, jugador que ha tirat la carta)
 trampa :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
 trampa _ _ [] _ = Nothing
 trampa ll trumfu pila jug =
@@ -204,8 +238,8 @@ trampa ll trumfu pila jug =
     --jugades4 = jugades (ll!!(mod (jug + 2) 4)) trumfu [c1,c2,c3]
     --hiHaTrampa = [((notElem c1 jugades1),(mod (jug - 1) 4)),((notElem c2 jugades2),(mod (jug) 4)), ((notElem c3 jugades3),(mod (jug + 1) 4)),((notElem c4 jugades4),(mod (jug + 2) 4))]
 
--- Pre :
--- Post :
+-- Pre : Donat el trumfu la partida i qui ha començat (S'ha d'haver jugat la partida sencera)
+-- Post : Retorna les cartes guanyades de cada equip en forma de tupla ([cartes equip 1], [cartes equip 2])
 cartesGuanyades::  Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
 cartesGuanyades trumfu [] jugador = ([],[])
 cartesGuanyades trumfu (c1:c2:c3:c4:pila) jugador
@@ -217,13 +251,13 @@ cartesGuanyades trumfu (c1:c2:c3:c4:pila) jugador
     seguentJug = quiSortira jugador (snd guanyador)
     res = (cartesGuanyades trumfu pila seguentJug)
 
--- Pre :
--- Post :
+-- Pre : Donades una llista de cartes
+-- Post : Retorna la suma dels punts de les cartes de la llista sumant 1 punt per basa
 punts :: [Carta] -> Int
 punts llista = sum [ (valor x) | x <- llista] + (div (length llista) 4)
 
--- Pre :
---Post :
+-- Pre : Donades les mans dels jugadors, el trumfu, la partida i el jugador que ha començat la partida
+-- Post : Retorna nothing si s'ha fet trampa, o (Punts equip 1, Punts equip 2) en cas que no s'hagi fet trampa
 puntsParelles :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
 puntsParelles cartesJugadors trumfu partida jug
   | trampa cartesJugadors trumfu partida jug == Nothing = Just (punts (fst resultatPartida), punts (snd resultatPartida))
@@ -231,18 +265,18 @@ puntsParelles cartesJugadors trumfu partida jug
   where
     resultatPartida = cartesGuanyades trumfu partida jug
 
--- Pre :
--- Post :
+-- Pre : Donada una llista de cartes i un nombre aleatori
+-- Post : mou la carta que està a la posició random a la cua de la llista de cartes
 canviaPosicio :: [Carta] -> Int -> [Carta]
 canviaPosicio cartes random = ((filter (/=(cartes!!random)) cartes) ++ [(cartes!!random)])
 
--- Pre :
--- Post :
+-- Pre : Donades la baralla de cartes i un llistat de randoms infinit
+-- Post : Retorna la baralla de caretes barrejada
 barreja :: [Carta] -> [Int] -> [Carta]
 barreja cartes random = foldl (canviaPosicio) (cartes) random
 
--- Pre :
--- Post :
+-- Pre : Donades les mans dels jugadors (buides al inici), la baralla barrejada i el primer al que es reparteix
+-- Post : Retorna les mans dels jugadors repartides d'acord amb les normes del joc.
 reparteix :: [[Carta]] -> [Carta] -> Int -> [[Carta]]
 reparteix mans [] jugador = mans
 reparteix [a,b,c,d] (c1:c2:c3:c4:pila) jugador
@@ -252,12 +286,14 @@ reparteix [a,b,c,d] (c1:c2:c3:c4:pila) jugador
   | jugador == 4 = reparteix [a, b, c, d ++ [c1,c2,c3,c4]] pila (seguentJugador jugador)
   | otherwise = [a,b,c,d]
 
--- Pre :
--- Post :
+-- Pre : Donades les mans, el trumfu de la partida i qui comença a jugar
+-- Post : Genera una partida de butifarra amb el criteri qui s'expressa dins del where ( TODO : Canviar a bassant oriental o occidental)
 generarPartida :: [[Carta]] -> Trumfu -> Int -> [Carta]
 generarPartida [[],[],[],[]] _ _ = []
 generarPartida mans trumfu jug = basa ++ generarPartida (extreu mans basa jug) trumfu (properATirar basa trumfu jug)--(quiSortira (quiGuanya ))
   where
+    -- Aquest maximum s'ha de canviar per un escull millor tirada
+    basa= [ maximum (jugades (mans!!(mod (jug + (n-1)) 4)) trumfu (take n basa)) | n <-[0..3] ]
     --jug1 = (jug - 1)
     --jug2 = ((seguentJugador jug) - 1)
     --jug3 = ((seguentJugador (seguentJugador jug)) - 1)
@@ -268,9 +304,51 @@ generarPartida mans trumfu jug = basa ++ generarPartida (extreu mans basa jug) t
     --carta4 = maximum (jugades (mans!!jug4) trumfu [carta, carta2, carta3])
     --basa = [carta, carta2, carta3, carta4]
     --basa= [ head cartes1!!n | n <- [0..3]]
-    basa= [ maximum (jugades (mans!!(mod (jug + (n-1)) 4)) trumfu (take n basa)) | n <-[0..3] ]
 
 
+-- Pre : Donada la partida jugada fins el moment i una carta qualsevol
+-- Post : Retorna cert si aquesta carta és ferma, fals altrament. (només mira el pal)
+esFerma :: [Carta] -> Carta -> Bool
+esFerma partida (Carta Manilla pal) = True
+esFerma partida (Carta tipus pal) = and [ elem x partida | x <- [(cartaSeguentMajor (Carta tipus pal))..(Carta Manilla pal)]]
+
+
+-- Pre : Donada la partida fins el moment i les cartes d'un jugador, el trumfu de la partida i si el trumfu l'ha fet el company
+-- Post : Retorna la carta més adient per realitzar una sortida.
+escullMillorSortida :: [Carta] -> [Carta] -> Trumfu -> Carta
+escullMillorSortida partida ma trumfu
+  -- Sortida de Manilla As. (Quan tens manilla i as d'un mateix pal, amb el trumfu els has hagut de fer tu o el company)
+  | (elem (Carta Manilla Oros) ma) && (elem (Carta As Oros) ma) = (Carta Manilla Oros)
+  | (elem (Carta Manilla Copes) ma) && (elem (Carta As Copes) ma) = (Carta Manilla Copes)
+  | (elem (Carta Manilla Espases) ma) && (elem (Carta As Espases) ma) = (Carta Manilla Espases)
+  | (elem (Carta Manilla Bastos) ma) && (elem (Carta As Bastos) ma) = (Carta Manilla Bastos)
+  -- | and [(elem (Carta Manilla pal) ma) && (elem (Carta As pal) ma) | pal <- [Oros .. Bastos] ] = (Carta Manilla pal)
+  -- Sortida de Manilla Rei. (Quan tens manilla i rei d'un mateix pal que no és trumfu)
+  | (elem (Carta Manilla Oros) ma) && (elem (Carta Rei Oros) ma) && trumfu /= (Pal Oros) = (Carta Manilla Oros)
+  | (elem (Carta Manilla Copes) ma) && (elem (Carta Rei Copes) ma) && trumfu /= (Pal Copes) = (Carta Manilla Copes)
+  | (elem (Carta Manilla Espases) ma) && (elem (Carta Rei Espases) ma) && trumfu /= (Pal Espases) = (Carta Manilla Espases)
+  | (elem (Carta Manilla Bastos) ma) && (elem (Carta Rei Bastos) ma) && trumfu /= (Pal Bastos) = (Carta Manilla Bastos)
+  -- Sortida protegir As. (Quan tens As i una carta entre el 7 i el rei d'un mateix pal, llavors jugues la carta inferior per protegir el teu as) Aquesta jugada requereix que tinguis més de tres cartes del pal que tens la coincidència.
+
+  -- Sortir de semifallo (Només al inici de la partida o amb poques mans jugades)
+
+  -- Sortida petita Butifarra. (Quan tens una manilla i una carta petita d'un pal (es juga la petita per marcar al contrari que tens una manilla))
+  | otherwise = maximum fermes
+  where
+    fermes = filter (esFerma partida) ma
+    oros = [x | x <-ma, (\(Carta tp p)->p==Oros) x]
+    bastos = [x | x <-ma, (\(Carta tp p)->p==Bastos) x]
+    espases = [x | x <-ma, (\(Carta tp p)->p==Espases) x]
+    copes = [x | x <-ma, (\(Carta tp p)->p==Copes) x]
+
+-- Pre : Donada la partida, la ma del que li toca tirar, la basa del moment, el trumfu i el jugador que ha començat a tirar
+-- Post : Retorna la carta més adient per seguir jugant.
+escullCartaATirar :: [Carta] -> [Carta] -> [Carta] -> Trumfu -> Int -> Carta
+-- Estic sortint i per tant miro de que sortir.
+escullCartaATirar partida ma [] trumfu primerJugador = escullMillorSortida partida ma trumfu
+--escullCartaATirar partida ma [c] trumfu primerJugador =
+--escullCartaATirar partida ma [c1,c2] trumfu primerJugador =
+--escullCartaATirar partida ma [c1,c2,c3] trumfu primerJugador = 
 
 main = do
   seed <- newStdGen
