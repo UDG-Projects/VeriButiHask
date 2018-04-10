@@ -1,41 +1,61 @@
--- Imports
 import System.Random
-
+----------------------------------------------------------------------------------------------------------------------------------
 -- Constants
-cartes1 = [
-  [Carta Manilla Bastos, Carta Vuit Bastos, Carta Tres Espases, Carta As Copes, Carta Quatre Bastos, Carta Cavall Espases, Carta Set Copes, Carta As Oros, Carta Cinc Bastos, Carta Sota Copes, Carta Quatre Espases, Carta Set Bastos],
-  [Carta Sota Bastos, Carta Cavall Bastos, Carta Manilla Espases, Carta Vuit Copes, Carta Cinc Oros, Carta Vuit Espases, Carta Manilla Copes, Carta Sis Oros, Carta Sota Oros, Carta Cinc Copes, Carta Set Oros, Carta Quatre Copes],
-  [Carta As Bastos, Carta Dos Oros, Carta Rei Espases, Carta Cavall Copes, Carta Vuit Oros, Carta As Espases, Carta Rei Copes, Carta Rei Oros, Carta Tres Copes, Carta Sis Copes, Carta Sis Espases, Carta Cinc Espases],
-  [Carta Dos Bastos, Carta Tres Bastos, Carta Dos Espases, Carta Dos Copes, Carta Sis Bastos, Carta Set Espases, Carta Tres Oros, Carta Quatre Oros, Carta Rei Bastos, Carta Cavall Oros, Carta Manilla Oros, Carta Sota Espases]]
+----------------------------------------------------------------------------------------------------------------------------------
 
-cartesMod = [
-  [Carta Manilla Bastos, Carta Vuit Bastos, Carta Tres Espases, Carta As Copes, Carta Quatre Bastos, Carta Cavall Espases, Carta Set Copes, Carta Manilla Copes, Carta Cinc Bastos, Carta Sota Copes, Carta Quatre Espases, Carta Set Bastos],
-  [Carta Sota Bastos, Carta Cavall Bastos, Carta Manilla Espases, Carta Vuit Copes, Carta Cinc Oros, Carta Vuit Espases, Carta As Oros, Carta Sis Oros, Carta Sota Oros, Carta Cinc Copes, Carta Set Oros, Carta Quatre Copes],
-  [Carta As Bastos, Carta Dos Oros, Carta Rei Espases, Carta Cavall Copes, Carta Vuit Oros, Carta As Espases, Carta Rei Copes, Carta Rei Oros, Carta Tres Copes, Carta Sis Copes, Carta Sis Espases, Carta Cinc Espases],
-  [Carta Dos Bastos, Carta Tres Bastos, Carta Dos Espases, Carta Dos Copes, Carta Sis Bastos, Carta Set Espases, Carta Tres Oros, Carta Quatre Oros, Carta Rei Bastos, Carta Cavall Oros, Carta Manilla Oros, Carta Sota Espases]]
+testMans = [
+  [Carta Cavall Espases, Carta Rei Oros, Carta Quatre Espases, Carta Set Copes, Carta As Espases, Carta Manilla Espases, Carta Manilla Bastos, Carta Sota Oros, Carta Vuit Copes, Carta As Copes, Carta Cinc Oros, Carta Sota Bastos]
+  , [Carta Dos Copes, Carta Quatre Copes, Carta Manilla Oros, Carta Cavall Oros, Carta Rei Copes, Carta Cinc Espases, Carta Vuit Espases, Carta Dos Oros, Carta As Oros, Carta Sota Copes, Carta Sis Bastos, Carta Quatre Oros]
+  , [Carta Vuit Bastos, Carta Set Espases, Carta Set Oros, Carta Tres Copes, Carta Sota Espases, Carta Tres Bastos, Carta Set Bastos, Carta Vuit Oros, Carta Cinc Copes, Carta As Bastos, Carta Dos Bastos, Carta Rei Bastos]
+  , [Carta Sis Oros, Carta Tres Espases, Carta Tres Oros, Carta Manilla Copes, Carta Cavall Copes, Carta Rei Espases, Carta Cavall Bastos, Carta Dos Espases, Carta Sis Espases, Carta Quatre Bastos, Carta Sis Copes, Carta Cinc Bastos]
+  ]
 
+test1 = [
+ Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Sis Bastos,
+ Carta Sota Bastos, Carta Dos Oros, Carta Dos Bastos, Carta Quatre Bastos,
+ Carta Manilla Oros, Carta Set Oros, Carta Tres Oros, Carta Cinc Oros,
+ Carta As Oros, Carta Vuit Oros, Carta Sis Oros, Carta Sota Oros,
+ Carta Quatre Oros, Carta Tres Copes, Carta Dos Espases, Carta Rei Oros,
+ Carta Manilla Espases, Carta Cinc Espases, Carta Set Espases, Carta Tres Espases,
+ Carta As Espases, Carta Vuit Espases, Carta Sota Espases, Carta Sis Espases,
+ Carta Vuit Copes, Carta Rei Copes, Carta Cinc Copes, Carta Cavall Copes,
+ Carta Sota Copes, Carta Tres Bastos, Carta Manilla Copes, Carta Set Copes,
+ Carta Rei Espases, Carta Quatre Espases, Carta Dos Copes, Carta Set Bastos,
+ Carta Cinc Bastos, Carta Cavall Espases, Carta Quatre Copes, Carta As Bastos,
+ Carta Rei Bastos, Carta Sis Copes, Carta As Copes, Carta Cavall Oros]
 
-partida1=[Carta Manilla Bastos, Carta Sota Bastos,  Carta As Bastos, Carta Dos Bastos,
- Carta Vuit Bastos, Carta Cavall Bastos, Carta Dos Oros, Carta Tres Bastos,
- Carta Rei Espases, Carta Dos Espases, Carta Tres Espases, Carta Manilla Espases,
- Carta Vuit Copes, Carta Cavall Copes, Carta Dos Copes, Carta As Copes,
- Carta Quatre Bastos, Carta Cinc Oros, Carta Vuit Oros, Carta Sis Bastos,
- Carta As Espases, Carta Set Espases, Carta Cavall Espases, Carta Vuit Espases,
- Carta Rei Copes, Carta Tres Oros, Carta Set Copes, Carta Manilla Copes,
- Carta Quatre Oros, Carta As Oros, Carta Sis Oros, Carta Rei Oros,
- Carta Cinc Bastos, Carta Sota Oros, Carta Tres Copes, Carta Rei Bastos,
- Carta Cinc Copes, Carta Sis Copes, Carta Cavall Oros, Carta Sota Copes,
- Carta Manilla Oros, Carta Quatre Espases, Carta Set Oros, Carta Sis Espases,
- Carta Sota Espases, Carta Set Bastos, Carta Quatre Copes, Carta Cinc Espases]
+test2 =
+  [
+  Carta Sota Copes, Carta Tres Copes, Carta Manilla Copes, Carta Set Copes
+  , Carta Sis Copes, Carta As Copes, Carta Dos Copes, Carta Cinc Copes
+  , Carta Sota Oros, Carta Manilla Oros, Carta Set Oros, Carta Tres Oros
+  , Carta As Oros, Carta Vuit Oros, Carta Sis Oros, Carta Cinc Oros
+  , Carta Rei Copes, Carta Set Espases, Carta Cavall Copes, Carta Vuit Copes
+  , Carta Quatre Copes, Carta Dos Bastos, Carta Cavall Bastos, Carta Quatre Espases
+  , Carta Quatre Oros, Carta Tres Bastos, Carta Quatre Bastos, Carta Rei Oros
+  , Carta Manilla Espases, Carta Cinc Espases, Carta Sota Espases, Carta Dos Espases
+  , Carta As Espases, Carta Vuit Espases, Carta As Bastos, Carta Tres Espases
+  , Carta Manilla Bastos, Carta Sis Bastos, Carta Set Bastos, Carta Cinc Bastos
+  , Carta Sota Bastos, Carta Dos Oros, Carta Rei Bastos, Carta Sis Espases
+  , Carta Vuit Bastos, Carta Rei Espases, Carta Cavall Espases, Carta Cavall Oros]
 
-basa1=[Carta Sota Bastos, Carta As Bastos, Carta Manilla Bastos, Carta Dos Bastos]
-
--- Random seed
--- newRand = newStdGen
-
+capot = [
+  Carta Rei Espases, Carta Manilla Espases, Carta Cinc Espases, Carta Sota Espases
+  , Carta Manilla Bastos, Carta Sis Bastos, Carta Dos Bastos, Carta Quatre Bastos
+  , Carta Sota Bastos, Carta Dos Copes, Carta As Bastos, Carta Cinc Bastos
+  , Carta Rei Bastos, Carta Cavall Bastos, Carta Rei Oros, Carta Vuit Espases
+  , Carta Set Espases, Carta Dos Espases, Carta As Espases, Carta Manilla Oros
+  , Carta Cavall Espases, Carta As Oros, Carta Tres Copes, Carta Sis Espases
+  , Carta Quatre Espases, Carta Cavall Oros, Carta Cinc Copes, Carta Tres Espases
+  , Carta Sota Oros, Carta Dos Oros, Carta Set Oros, Carta Tres Oros
+  , Carta Cinc Oros, Carta Quatre Oros, Carta Vuit Oros, Carta Sis Oros
+  , Carta Tres Bastos, Carta Sis Copes, Carta Set Copes, Carta Quatre Copes
+  , Carta Set Bastos, Carta Cavall Copes, Carta As Copes, Carta Sota Copes
+  , Carta Vuit Bastos, Carta Manilla Copes, Carta Vuit Copes, Carta Rei Copes]
+----------------------------------------------------------------------------------------------------------------------------------
 -- Tipus
+----------------------------------------------------------------------------------------------------------------------------------
 data Pal = Oros | Copes | Espases | Bastos deriving (Show, Eq, Enum)
-
 
 data Trumfu = Butifarra | Pal Pal
 instance Eq Trumfu where
@@ -46,9 +66,7 @@ instance Show Trumfu where
   show (Butifarra) = "Butifarra"
   show (Pal pal)   = show pal
 
-
 data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Eq, Ord, Enum)
-
 
 data Carta = Carta TipusCarta Pal
 instance Eq Carta where
@@ -63,8 +81,12 @@ instance Enum Carta where
   toEnum x = (Carta (toEnum (mod x 12)) (toEnum (div x 12)))
   fromEnum (Carta tipus pal) = ((fromEnum tipus)) + ((fromEnum pal) * 12)
 
+----------------------------------------------------------------------------------------------------------------------------------
+-- Funcions
+----------------------------------------------------------------------------------------------------------------------------------
 
--- Funcions -------------------------------------------------------------------------------
+baralla :: [Carta]
+baralla = [(Carta Dos Oros)..(Carta Manilla Bastos)]
 
 -- Pre : Donada una carta
 -- Post : Retorna el seu valor en punts
@@ -331,11 +353,108 @@ escullCartaATirar partida ma [] trumfu primerJugador = escullMillorSortida parti
 --escullCartaATirar partida ma [c1,c2] trumfu primerJugador =
 --escullCartaATirar partida ma [c1,c2,c3] trumfu primerJugador =
 
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- Programa Principal
+----------------------------------------------------------------------------------------------------------------------------------
+mostraMenu = do
+  putStrLn("0 - Finalitzar Programa")
+  putStrLn("1 - Remenar Baralla")
+  putStrLn("2 - Repartir")
+  putStrLn("3 - Trampa")
+  putStrLn("4 - Cartes Guanyades")
+  putStrLn("5 - Punts")
+  putStrLn("6 - Punts Parelles")
+  putStrLn("7 - Jugar")
+
+
+mostraMenuTrampa = do
+  putStrLn("0 - Sortir del menu Trampa")
+  putStrLn("1 - No hi ha error test1")
+  putStrLn("2 - No hi ha error test2 pal Butifarra")
+  putStrLn("3 - No hi ha error capot")
+  putStrLn("4 - Error Falla de gallines")
+  putStrLn("5 - Error Refalla de gallines") -- Mata Amb trunfu quan encara l'in queden del pal de la basa
+  putStrLn("6 - Error S'escapen ") --No dona l'As quan l'ha de posar
+  putStrLn("7 - Error No Mata") -- el jugador no mata quan li toca matar
+
 main = do
+
   seed <- newStdGen
   let random = take 200 (randomRs (0 :: Int, 47) seed)
-  let quiReparteix = 2
-  let mans = reparteix [[],[],[],[]] (barreja partida1 random) quiReparteix
-  let pal = Butifarra
-  -- torna el jugador que comença el pal de la partida les mans dels jugadors del 1..4 i la partida
-  print $ ((seguentJugador quiReparteix), pal, mans, generarPartida mans (pal) (seguentJugador quiReparteix) )
+  --let quiReparteix = 2
+  --  let mans = reparteix [[],[],[],[]] (barreja partida1 random) quiReparteix
+  --let pal = Butifarra
+  programa baralla random
+
+funcioTrampes = do
+  opcio <- getLine
+  let numOpcio = read opcio
+  if numOpcio == 0 then do
+    putStrLn("Retrocedir")
+  else if numOpcio == 1 then do
+    putStrLn(show (trampa testMans (Pal Oros) test1 3))
+    funcioTrampes
+  else if numOpcio == 2 then do
+    putStrLn(show (trampa testMans Butifarra test2 2))
+    funcioTrampes
+  else if numOpcio == 3 then do
+    putStrLn(show (trampa testMans (Pal Bastos) capot 4))
+    funcioTrampes
+
+  else if numOpcio == 4 then do
+    putStrLn("Es 1")
+    funcioTrampes
+  else if numOpcio == 5 then do
+    putStrLn("Es 1")
+    funcioTrampes
+  else if numOpcio == 6 then do
+    putStrLn("Es 1")
+    funcioTrampes
+  else if numOpcio == 7 then do
+    funcioTrampes
+  else do
+    putStrLn("L'has cagat. Tria bé coi!!")
+    funcioTrampes
+
+
+programa barallaCartes ra = do
+  --Generar Baralla
+  mostraMenu
+  opcio <- getLine
+  let numOpcio = read opcio
+  if numOpcio == 0 then
+    putStrLn("Numero 0")
+  else if numOpcio == 1 then do
+    --Remenar la baralla
+    let barrejades = (barreja barallaCartes ra)
+    putStrLn(show barrejades)
+    programa barrejades ra
+  else if numOpcio == 2 then do
+    -- Repartir cartes
+    jug <- getLine
+    let numJug = read jug
+    let mans = reparteix [[],[],[],[]] (barreja barallaCartes ra) numJug
+    putStrLn(show mans)
+    programa barallaCartes ra
+  else if numOpcio == 3 then do
+    --Trampa
+    mostraMenuTrampa
+    funcioTrampes
+    programa barallaCartes ra
+  else if numOpcio == 4 then do
+    putStrLn("Es 1")
+    main
+  else if numOpcio == 5 then do
+    putStrLn("Es 1")
+    main
+  else if numOpcio == 6 then do
+    putStrLn("Es 1")
+    main
+  else if numOpcio == 7 then do
+    putStrLn("Es 1")
+    main
+  else do
+    putStrLn("Opcio incorrecte")
+    main
