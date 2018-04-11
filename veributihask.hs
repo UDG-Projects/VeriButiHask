@@ -52,6 +52,8 @@ capot = [
   , Carta Tres Bastos, Carta Sis Copes, Carta Set Copes, Carta Quatre Copes
   , Carta Set Bastos, Carta Cavall Copes, Carta As Copes, Carta Sota Copes
   , Carta Vuit Bastos, Carta Manilla Copes, Carta Vuit Copes, Carta Rei Copes]
+
+
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Tipus
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -102,18 +104,18 @@ valor (Carta tc _)
 -- Pre : 0 < [x && y] < 5
 -- Post : [1-4] referent al proper a tirar.
 quiSortira :: Int -> Int -> Int
-quiSortira x y
-  | modul == 0 = 4
-  | otherwise = modul
-  where
-    modul = ((mod) ((-) ((+) x y) 1) 4)
+quiSortira x y = (mod ( x + y)  4)
+--  | modul == 0 = 4
+--  | otherwise = modul
+--  where
+--    modul = ((mod) ((-) ((+) x y) 1) 4)
 
 -- Pre : Donat el número d'un jugador
 -- Post : Retorna el número del següent jugador
 seguentJugador :: Int -> Int
-seguentJugador jugador
-  | jugador == 4 = 1
-  | otherwise = jugador + 1
+seguentJugador jugador = mod (jugador + 1) 4
+  -- | jugador == 4 = 1
+--  | otherwise = jugador + 1
 
 -- Pre : Donada una basa, el jugador que l'ha començat i el jugador que volem saber que ha tirat
 -- Post : Retorna la carta jugada per jugador sent comenca qui ha començat la basa
@@ -167,7 +169,7 @@ palGuanyadorBasa ll (Pal trumfu) = if length (cartesPal ll trumfu) > 0 then trum
 -- Post : La carta i la posició guanyadora en forma de tupla
 quiGuanya :: [Carta] -> Trumfu -> (Carta, Int)
 quiGuanya [] trumfo = error "No em pots passar una llista buida Animal! "
-quiGuanya ll trumfo =  (cartaGuanyadora, (head [index | (index, carta) <- zip [1..] ll, carta == cartaGuanyadora]))
+quiGuanya ll trumfo =  (cartaGuanyadora, (head [index | (index, carta) <- zip [0..] ll, carta == cartaGuanyadora]))
   where
     palGuanyador = palGuanyadorBasa ll trumfo
     cartaGuanyadora = maximum (cartesPal ll palGuanyador)
@@ -176,7 +178,7 @@ quiGuanya ll trumfo =  (cartaGuanyadora, (head [index | (index, carta) <- zip [1
 -- Post : Retorna cert si s'ha de matar fals altrament
 saDeMatar :: Int -> Int -> Bool
 saDeMatar posGuanya posMeu
-  | posMeu - 2 > 0 = posMeu - 2 /= posGuanya
+  | posMeu - 2 >= 0 = posMeu - 2 /= posGuanya
   | otherwise = True
 
 -- Pre : Donada una condició i dues llistes
@@ -200,16 +202,16 @@ jugades cartesJugador trumfu ll =
       selecciona (esticObligatAMatar && (length cartesJugadorMaten) > 0) cartesJugadorMaten cartesJugador
   where
     guanyador = quiGuanya ll trumfu
-    esticObligatAMatar = saDeMatar (snd guanyador) ((length ll) + 1)
+    esticObligatAMatar = saDeMatar (snd guanyador) ((length ll) )
     palBasa = ((\(Carta tc pal)->pal) (head ll))
     cartesJugadorPalBasa = cartesPal cartesJugador palBasa
     cartesJugadorMaten = filter (mata trumfu (fst guanyador)) cartesJugador
     cartesJugadorMatenPalBasa = cartesPal cartesJugadorMaten palBasa
 
--- Pre : Donades les mans dels jugadors, la basa i qui ha començat a jugar la basa
+-- Pre : Donades les mans dels jugadors, la basa i qui ha començat a jugar la basa [0 -3]
 -- Post : Retorna les mans dels jugadors sense les cartes que s'han jugat a la basa
 extreu :: [[Carta]] -> [Carta] -> Int -> [[Carta]]
-extreu mans basa jug = [filter (/=cartaJugadorBasa basa jug x) (mans!!(x - 1)) | x <- [1..4]]
+extreu mans basa jug = [filter (/=cartaJugadorBasa basa jug x) (mans!!x) | x <- [0..3]]
 -- extreu mans basa jug = [(filter (/=(cartaJugadorBasa basa jug 1)) (mans!!0)),
                         --(filter (/=(cartaJugadorBasa basa jug 2)) (mans!!1)),
                         --(filter (/=(cartaJugadorBasa basa jug 3)) (mans!!2)),
@@ -227,12 +229,16 @@ trampa _ _ [] _ = Nothing
 trampa ll trumfu pila jug =
   if or [fst x | x<-hiHaTrampa] then
     Just (basa, (12 - (length (head ll))) + 1 , (head [snd x | x<-hiHaTrampa, (fst x)]) + 1)
-    --Just ((fst ( jugadesGen!!1)),(snd (jugadesGen!!2)),1)
   else trampa (extreu ll basa jug) trumfu (drop 4 pila) (properATirar basa trumfu jug) --(quiSortira jug (snd (quiGuanya basa trumfu)))
   where
     -- Mirem que les cartes estiguin dintre de jugades
     basa = take 4 pila
-    hiHaTrampa= [((notElem (pila!!n) (jugades (ll!!(mod (jug + (n-1)) 4)) trumfu (take n pila))), (mod (jug +(n-1)) 4)) | n <-[0..3] ]
+    hiHaTrampa= [((notElem (pila!!n) (jugades (ll!!(mod (jug + n) 4)) trumfu (take n pila))), (mod (jug + n) 4)) | n<-[0..3] ]
+    -- es mira per a les 4 cartes de la basa si apareixen a les possibles cartes del jugador (jugades)
+    -- es fa una llista amb una tupla (bool, Int).
+    --    el boolea representa que la carta ha estat mal tirada (true)
+    --    el Int el numero de jugador que l'ha tirat
+
     --jugadesGen= [((jugades (ll!!(mod (jug + (n-1)) 4)) trumfu (take n pila)), (mod (jug +(n-1)) 4)) | n <-[0..3] ]
     --hiHaTrampa= [((notElem (pila!!n) (fst (jugadesGen!!n))), (snd (jugadesGen!!n))) |  n <- [0..3]]
     --jugades1 = jugades (ll!!(mod (jug - 1) 4)) trumfu []
@@ -241,13 +247,13 @@ trampa ll trumfu pila jug =
     --jugades4 = jugades (ll!!(mod (jug + 2) 4)) trumfu [c1,c2,c3]
     --hiHaTrampa = [((notElem c1 jugades1),(mod (jug - 1) 4)),((notElem c2 jugades2),(mod (jug) 4)), ((notElem c3 jugades3),(mod (jug + 1) 4)),((notElem c4 jugades4),(mod (jug + 2) 4))]
 
--- Pre : Donat el trumfu la partida i qui ha començat (S'ha d'haver jugat la partida sencera)
+-- Pre : Donat el trumfu la partida i qui ha començat [0-3] (S'ha d'haver jugat la partida sencera)
 -- Post : Retorna les cartes guanyades de cada equip en forma de tupla ([cartes equip 1], [cartes equip 2])
 cartesGuanyades::  Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
 cartesGuanyades trumfu [] jugador = ([],[])
 cartesGuanyades trumfu (c1:c2:c3:c4:pila) jugador
-  | (mod seguentJug 2) /= 0 = (basa ++ (fst res), (snd res))
-  | otherwise = ((fst res), basa ++ (snd res))
+  | (mod seguentJug 2) == 0 = (basa ++ (fst res), (snd res)) -- seran els jugadors 0 i 2
+  | otherwise = ((fst res), basa ++ (snd res)) --jugadors 1 i 3
   where
     basa = [c1,c2,c3,c4]
     guanyador = quiGuanya basa trumfu
@@ -259,7 +265,7 @@ cartesGuanyades trumfu (c1:c2:c3:c4:pila) jugador
 punts :: [Carta] -> Int
 punts llista = sum [ (valor x) | x <- llista] + (div (length llista) 4)
 
--- Pre : Donades les mans dels jugadors, el trumfu, la partida i el jugador que ha començat la partida
+-- Pre : Donades les mans dels jugadors, el trumfu, la partida i el jugador que ha començat la partida [0-3]
 -- Post : Retorna nothing si s'ha fet trampa, o (Punts equip 1, Punts equip 2) en cas que no s'hagi fet trampa
 puntsParelles :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe (Int, Int)
 puntsParelles cartesJugadors trumfu partida jug
@@ -278,16 +284,29 @@ canviaPosicio cartes random = ((filter (/=(cartes!!random)) cartes) ++ [(cartes!
 barreja :: [Carta] -> [Int] -> [Carta]
 barreja cartes random = foldl (canviaPosicio) (cartes) random
 
--- Pre : Donades les mans dels jugadors (buides al inici), la baralla barrejada i el primer al que es reparteix
+-- Pre : Donades les mans dels jugadors (buides al inici), la baralla barrejada i el primer al que es reparteix [0-3]
 -- Post : Retorna les mans dels jugadors repartides d'acord amb les normes del joc.
 reparteix :: [[Carta]] -> [Carta] -> Int -> [[Carta]]
 reparteix mans [] jugador = mans
-reparteix [a,b,c,d] (c1:c2:c3:c4:pila) jugador
-  | jugador == 1 = reparteix [a ++ [c1,c2,c3,c4], b, c, d] pila (seguentJugador jugador)
-  | jugador == 2 = reparteix [a, b ++ [c1,c2,c3,c4], c, d] pila (seguentJugador jugador)
-  | jugador == 3 = reparteix [a, b, c ++ [c1,c2,c3,c4], d] pila (seguentJugador jugador)
-  | jugador == 4 = reparteix [a, b, c, d ++ [c1,c2,c3,c4]] pila (seguentJugador jugador)
-  | otherwise = [a,b,c,d]
+reparteix mans cartes jugador = reparteix novaMans (drop 4 cartes) (seguentJugador jugador)
+ where
+  maJugador = (mans!!(jugador))++(take 4 cartes)
+  -- construir la ma del seguent jugador
+  novaMans = take jugador mans ++ [maJugador] ++ drop (jugador + 1) mans
+  -- s'ha de construir una nova llista de novaMans
+  -- S'agafen les mans just abans del jugador, les del jugador i la resta de mans fins al Finalitzar
+
+--  | jugador == 1 = reparteix [a ++ [c1,c2,c3,c4], b, c, d] pila (seguentJugador jugador)
+--  | jugador == 2 = reparteix [a, b ++ [c1,c2,c3,c4], c, d] pila (seguentJugador jugador)
+--  | jugador == 3 = reparteix [a, b, c ++ [c1,c2,c3,c4], d] pila (seguentJugador jugador)
+--  | jugador == 4 = reparteix [a, b, c, d ++ [c1,c2,c3,c4]] pila (seguentJugador jugador)
+--  | otherwise = [a,b,c,d]
+
+updateMatrix :: [[a]] -> a -> (Int, Int) -> [[a]]
+updateMatrix m x (r,c) =
+  take r m ++
+  [take c (m !! r) ++ [x] ++ drop (c + 1) (m !! r)] ++
+  drop (r + 1) m
 
 -- Pre : Donades les mans, el trumfu de la partida i qui comença a jugar
 -- Post : Genera una partida de butifarra amb el criteri qui s'expressa dins del where ( TODO : Canviar a bassant oriental o occidental)
@@ -355,6 +374,7 @@ escullCartaATirar partida ma [] trumfu primerJugador = escullMillorSortida parti
 
 
 
+
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Programa Principal
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -389,18 +409,19 @@ main = do
   programa baralla random
 
 funcioTrampes = do
+  mostraMenuTrampa
   opcio <- getLine
   let numOpcio = read opcio
   if numOpcio == 0 then do
     putStrLn("Retrocedir")
   else if numOpcio == 1 then do
-    putStrLn(show (trampa testMans (Pal Oros) test1 3))
+    putStrLn(show (trampa testMans (Pal Oros) test1 2)) --comença el 3
     funcioTrampes
   else if numOpcio == 2 then do
-    putStrLn(show (trampa testMans Butifarra test2 2))
+    putStrLn(show (trampa testMans Butifarra test2 1)) -- comença el 2
     funcioTrampes
   else if numOpcio == 3 then do
-    putStrLn(show (trampa testMans (Pal Bastos) capot 4))
+    putStrLn(show (trampa testMans (Pal Bastos) capot 3)) --comença el 4
     funcioTrampes
 
   else if numOpcio == 4 then do
@@ -440,7 +461,6 @@ programa barallaCartes ra = do
     programa barallaCartes ra
   else if numOpcio == 3 then do
     --Trampa
-    mostraMenuTrampa
     funcioTrampes
     programa barallaCartes ra
   else if numOpcio == 4 then do
