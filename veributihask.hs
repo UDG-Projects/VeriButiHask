@@ -1,4 +1,5 @@
 import System.Random
+import Drawable
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -53,11 +54,15 @@ capot = [
   , Carta Set Bastos, Carta Cavall Copes, Carta As Copes, Carta Sota Copes
   , Carta Vuit Bastos, Carta Manilla Copes, Carta Vuit Copes, Carta Rei Copes]
 
-
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Tipus
 ----------------------------------------------------------------------------------------------------------------------------------
-data Pal = Oros | Copes | Espases | Bastos deriving (Show, Eq, Enum, Read)
+data Pal = Oros | Copes | Espases | Bastos deriving (Eq, Enum)
+instance Show Pal where
+  show Oros = "O"
+  show Copes = "C"
+  show Espases = "E"
+  show Bastos = "B"
 
 data Trumfu = Butifarra | Pal Pal
 instance Eq Trumfu where
@@ -68,15 +73,18 @@ instance Show Trumfu where
   show (Butifarra) = "Butifarra"
   show (Pal pal)   = show pal
 
-data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Eq, Ord, Enum, Read)
+data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Eq, Ord, Enum)
+instance Show TipusCarta where
+  show Sota = "S"
+  show Cavall = "C"
+  show Rei = "R"
+  show As = "A"
+  show Manilla = "9"
+  show x = show (fromEnum(x) + 2)
 
-data Carta = Carta TipusCarta Pal deriving (Show, Read)
-instance Eq Carta where
-  Carta te pe == Carta td pd = (te == td) && (pe == pd)
---instance Show Carta where
---  show (Carta a Bastos) = show a ++ " de " ++ show Bastos
---  show (Carta a Copes) = show a ++ " de " ++ show Copes
---  show (Carta a b)   = show a ++ " d'" ++ show b
+data Carta = Carta TipusCarta Pal deriving (Eq)
+instance Show Carta where
+  show (Carta a b) = show a ++ show b
 instance Ord Carta where
   (Carta te pe) <= (Carta td pd) = te <= td
 instance Enum Carta where
@@ -89,15 +97,24 @@ instance Enum Carta where
 -- Funcions
 ----------------------------------------------------------------------------------------------------------------------------------
 
+-- Pre :
+-- Post :
 baralla :: [Carta]
 baralla = [(Carta Dos Oros)..(Carta Manilla Bastos)]
 
+-- Pre :
+-- Post :
 ronda:: Int -> [Int] -> [Int]
 ronda primer llista = if (length llista) < 4 then  (ronda jugador novaLlista) else llista
  where
    jugador = seguentJugador primer
    novaLlista =llista ++ [jugador]
 
+
+-- Pre :
+-- Post :
+lastN :: Int -> [a] -> [a]
+lastN n xs = foldl (const . drop 1) xs (drop n xs)
 
 
 -- Pre : Donada una carta
@@ -115,17 +132,11 @@ valor (Carta tc _)
 -- Post : [0-3] referent al proper a tirar.
 quiSortira :: Int -> Int -> Int
 quiSortira x y = (mod ( x + y)  4)
---  | modul == 0 = 4
---  | otherwise = modul
---  where
---    modul = ((mod) ((-) ((+) x y) 1) 4)
 
 -- Pre : Donat el número d'un jugador
 -- Post : Retorna el número del següent jugador
 seguentJugador :: Int -> Int
 seguentJugador jugador = mod (jugador + 1) 4
-  -- | jugador == 4 = 1
---  | otherwise = jugador + 1
 
 -- Pre : Donada una basa, el jugador que l'ha començat i el jugador que volem saber que ha tirat
 -- Post : Retorna la carta jugada per jugador sent comenca qui ha començat la basa
@@ -222,10 +233,6 @@ jugades cartesJugador trumfu ll =
 -- Post : Retorna les mans dels jugadors sense les cartes que s'han jugat a la basa
 extreu :: [[Carta]] -> [Carta] -> Int -> [[Carta]]
 extreu mans basa jug = [filter (/=cartaJugadorBasa basa jug x) (mans!!x) | x <- [0..3]]
--- extreu mans basa jug = [(filter (/=(cartaJugadorBasa basa jug 1)) (mans!!0)),
-                        --(filter (/=(cartaJugadorBasa basa jug 2)) (mans!!1)),
-                        --(filter (/=(cartaJugadorBasa basa jug 3)) (mans!!2)),
-                        --(filter (/=(cartaJugadorBasa basa jug 4)) (mans!!3))]
 
 -- Pre : Donada una basa, el trumfu i el primer que ha jugat
 -- Post : Retorna el jugador que començarà la següent basa
@@ -248,14 +255,6 @@ trampa ll trumfu pila jug =
     -- es fa una llista amb una tupla (bool, Int).
     --    el boolea representa que la carta ha estat mal tirada (true)
     --    el Int el numero de jugador que l'ha tirat
-
-    --jugadesGen= [((jugades (ll!!(mod (jug + (n-1)) 4)) trumfu (take n pila)), (mod (jug +(n-1)) 4)) | n <-[0..3] ]
-    --hiHaTrampa= [((notElem (pila!!n) (fst (jugadesGen!!n))), (snd (jugadesGen!!n))) |  n <- [0..3]]
-    --jugades1 = jugades (ll!!(mod (jug - 1) 4)) trumfu []
-    --jugades2 = jugades (ll!!(mod (jug) 4))     trumfu [c1]
-    --jugades3 = jugades (ll!!(mod (jug + 1) 4)) trumfu [c1,c2]
-    --jugades4 = jugades (ll!!(mod (jug + 2) 4)) trumfu [c1,c2,c3]
-    --hiHaTrampa = [((notElem c1 jugades1),(mod (jug - 1) 4)),((notElem c2 jugades2),(mod (jug) 4)), ((notElem c3 jugades3),(mod (jug + 1) 4)),((notElem c4 jugades4),(mod (jug + 2) 4))]
 
 -- Pre : Donat el trumfu la partida i qui ha començat [0-3] (S'ha d'haver jugat la partida sencera)
 -- Post : Retorna les cartes guanyades de cada equip en forma de tupla ([cartes equip 1], [cartes equip 2])
@@ -306,12 +305,6 @@ reparteix mans cartes jugador = reparteix novaMans (drop 4 cartes) (seguentJugad
   -- s'ha de construir una nova llista de novaMans
   -- S'agafen les mans just abans del jugador, les del jugador i la resta de mans fins al Finalitzar
 
---  | jugador == 1 = reparteix [a ++ [c1,c2,c3,c4], b, c, d] pila (seguentJugador jugador)
---  | jugador == 2 = reparteix [a, b ++ [c1,c2,c3,c4], c, d] pila (seguentJugador jugador)
---  | jugador == 3 = reparteix [a, b, c ++ [c1,c2,c3,c4], d] pila (seguentJugador jugador)
---  | jugador == 4 = reparteix [a, b, c, d ++ [c1,c2,c3,c4]] pila (seguentJugador jugador)
---  | otherwise = [a,b,c,d]
-
 tiraCartaBot :: [Carta] -> Trumfu -> [Carta] -> Carta
 tiraCartaBot ma trumfu basa = maximum (jugades ma trumfu basa)
 
@@ -323,16 +316,6 @@ generarPartida mans trumfu jug = basa ++ generarPartida (extreu mans basa jug) t
   where
     -- Aquest maximum s'ha de canviar per un escull millor tirada
     basa= [ tiraCartaBot  (mans!!(mod (jug + (n-1)) 4)) trumfu (take n basa) | n <-[0..3] ]
-    --jug1 = (jug - 1)
-    --jug2 = ((seguentJugador jug) - 1)
-    --jug3 = ((seguentJugador (seguentJugador jug)) - 1)
-    --jug4 = ((seguentJugador (seguentJugador (seguentJugador jug))) - 1)
-    --carta = maximum (jugades (mans!!jug1) trumfu [])
-    --carta2 = maximum (jugades (mans!!jug2) trumfu [carta])
-    --carta3 = maximum (jugades (mans!!jug3) trumfu [carta, carta2])
-    --carta4 = maximum (jugades (mans!!jug4) trumfu [carta, carta2, carta3])
-    --basa = [carta, carta2, carta3, carta4]
-    --basa= [ head cartes1!!n | n <- [0..3]]
 
 
 -- Pre : Donada la partida jugada fins el moment i una carta qualsevol
@@ -341,6 +324,9 @@ esFerma :: [Carta] -> Carta -> Bool
 esFerma partida (Carta Manilla pal) = True
 esFerma partida (Carta tipus pal) = and [ elem x partida | x <- [(cartaSeguentMajor (Carta tipus pal))..(Carta Manilla pal)]]
 
+----------------------------------------------------------------------------------------------------------------------------------
+-- PRESUMPTA IA
+----------------------------------------------------------------------------------------------------------------------------------
 
 -- Pre : Donada la partida fins el moment i les cartes d'un jugador, el trumfu de la partida i si el trumfu l'ha fet el company
 -- Post : Retorna la carta més adient per realitzar una sortida.
@@ -382,19 +368,17 @@ escullCartaATirar partida ma [] trumfu primerJugador = escullMillorSortida parti
 
 
 
+
+
 ----------------------------------------------------------------------------------------------------------------------------------
--- Programa Principal
+-- MONADES MENUS
 ----------------------------------------------------------------------------------------------------------------------------------
 mostraMenu = do
   putStrLn("0 - Finalitzar Programa")
   putStrLn("1 - Remenar Baralla")
   putStrLn("2 - Repartir")
-  putStrLn("3 - Trampa")
-  putStrLn("4 - Cartes Guanyades")
-  putStrLn("5 - Punts")
-  putStrLn("6 - Punts Parelles")
-  putStrLn("7 - Jugar")
-
+  putStrLn("3 - Testos")
+  putStrLn("4 - Jugar")
 
 mostraMenuTrampa = do
   putStrLn("0 - Sortir del menu Trampa")
@@ -406,9 +390,8 @@ mostraMenuTrampa = do
   putStrLn("6 - Error S'escapen ") --No dona l'As quan l'ha de posar
   putStrLn("7 - Error No Mata") -- el jugador no mata quan li toca matar
 
-lastN :: Int -> [a] -> [a]
-lastN n xs = foldl (const . drop 1) xs (drop n xs)
-
+-- Pre :
+-- Post :
 tiraCarta :: [Carta] -> Trumfu -> [Carta] -> Bool -> IO (Carta)
 tiraCarta ma trumfu basa esJugadorReal = do
   if esJugadorReal then do
@@ -425,66 +408,82 @@ tiraCarta ma trumfu basa esJugadorReal = do
   else do
     return (tiraCartaBot ma trumfu basa)
 
+-- Pre :
+-- Post :
 jugar :: [[Carta]] -> Trumfu -> [Int] -> [Carta] -> Int -> IO ([Carta])
 jugar [[],[],[],[]] _ _  partida _ = do return (partida)
 jugar mans trumfu llistaJugadors partida playerReal = do
 
-  --let num = take 1 (mans!!quiTira)
   let quiTira = (llistaJugadors!!(mod (length partida) 4))
   let quiTirara = (seguentJugador quiTira)
   let basa = lastN (mod (length partida) 4) partida
   putStrLn( show(quiTira==playerReal))
-  cartaT <- (tiraCarta (mans!!quiTira) trumfu basa (quiTira==playerReal))
-  --let carta = (read (show cartaT))
-
-  putStrLn("El jugador " ++ (show quiTira) ++ " tira " ++ (show cartaT))
-
-  -- partida = partida ++ [carta]
-  -- return (partida)
+  carta <- (tiraCarta (mans!!quiTira) trumfu basa (quiTira==playerReal))
+  let novaBasa = basa++[carta]
+  putStrLn("El jugador " ++ (show quiTira) ++ " tira " ++ (show carta))
 
   if (llistaJugadors!!3) == quiTira then do
-    let guanyador = properATirar (basa ++[cartaT]) trumfu (head llistaJugadors)
-    putStrLn( "La basa final es" ++ show(basa++[cartaT]) ++ " i el que ha guanyat es " ++(show guanyador))
-    jugar (extreu mans (basa++[cartaT]) (head llistaJugadors)) trumfu (ronda guanyador [guanyador]) (partida++[cartaT]) playerReal
-    --putStrLn("Guanyador: "++(show guanyador))
---    jugar (drop 1 randoms) (ronda guanyador [guanyador]) partida guanyador
+    let guanyador = properATirar novaBasa trumfu (head llistaJugadors)
+    putStrLn( "La basa final es" ++ (show novaBasa) ++ " i el que ha guanyat es " ++ (show guanyador))
+    jugar (extreu mans (novaBasa) (head llistaJugadors)) trumfu (ronda guanyador [guanyador]) (partida++[carta]) playerReal
   else do
-    jugar mans trumfu llistaJugadors (partida++[cartaT]) playerReal
+    jugar mans trumfu llistaJugadors (partida++[carta]) playerReal
+
+-- Donat el test (trampa o punts parelles), Les cartes del jugadors, el trumfu, la partida que s'ha jugat i el número de jugador que l'ha començat
+-- Pinta per pantalla en un format llegible el resultat d'executar el test.
+doTest textTitol numExplicacio mans trumfu partida jugador = do
+  putStrLn((titol textTitol))
+  putStrLn("## MANS : ")
+  putStrLn(separador)
+  putStrLn("## Ma del jugador 1 -> " ++ show (mans!!0))
+  putStrLn("## Ma del jugador 2 -> " ++ show (mans!!1))
+  putStrLn("## Ma del jugador 3 -> " ++ show (mans!!2))
+  putStrLn("## Ma del jugador 4 -> " ++ show (mans!!3))
+  putStrLn(separador)
+  putStrLn("## PARTIDA : ")
+  putStrLn(separador)
+  putStrLn(show partida)
+  putStrLn(separador)
+  putStrLn((explicacioTest 1))
+  putStrLn(separador)
+  putStrLn((capcalera jugador (seguentJugador jugador) (show trumfu)))
+  putStrLn("## Hi ha Trampa = " ++ show (trampa mans trumfu partida (seguentJugador jugador)))
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- Programa Principal
+----------------------------------------------------------------------------------------------------------------------------------
 
 
-
-
-
-funcioTrampes = do
-  mostraMenuTrampa
+menuTrampes = do
   opcio <- getLine
   let numOpcio = read opcio
   if numOpcio == 0 then do
     putStrLn("Retrocedir")
   else if numOpcio == 1 then do
-    putStrLn(show (trampa testMans (Pal Oros) test1 2)) --comença el 3
-    funcioTrampes
+    doTest "Test 1" 1 testMans (Pal Oros) test1 2
+    menuTrampes
   else if numOpcio == 2 then do
-    putStrLn(show (trampa testMans Butifarra test2 1)) -- comença el 2
-    funcioTrampes
+    doTest "Test 2" 2 testMans Butifarra test2 1
+    --putStrLn(show (trampa testMans Butifarra test2 2))
+    menuTrampes
   else if numOpcio == 3 then do
-    putStrLn(show (trampa testMans (Pal Bastos) capot 3)) --comença el 4
-    funcioTrampes
-
+    doTest "Test 3" 3 testMans (Pal Bastos) capot 3
+    --putStrLn(show (trampa testMans (Pal Bastos) capot 4))
+    menuTrampes
   else if numOpcio == 4 then do
     putStrLn("Es 1")
-    funcioTrampes
+    menuTrampes
   else if numOpcio == 5 then do
     putStrLn("Es 1")
-    funcioTrampes
+    menuTrampes
   else if numOpcio == 6 then do
     putStrLn("Es 1")
-    funcioTrampes
+    menuTrampes
   else if numOpcio == 7 then do
-    funcioTrampes
+    menuTrampes
   else do
     putStrLn("L'has cagat. Tria bé coi!!")
-    funcioTrampes
+    menuTrampes
 
 
 programa barallaCartes ra = do
@@ -508,19 +507,11 @@ programa barallaCartes ra = do
     programa barallaCartes ra
   else if numOpcio == 3 then do
     --Trampa
-    funcioTrampes
+    mostraMenuTrampa
+    menuTrampes
     programa barallaCartes ra
   else if numOpcio == 4 then do
-    putStrLn("Es 1")
-    main
-  else if numOpcio == 5 then do
-    putStrLn("Es 1")
-    main
-  else if numOpcio == 6 then do
-    putStrLn("Es 1")
-    main
-  else if numOpcio == 7 then do
-    putStrLn("Es 1")
+
     main
   else do
     putStrLn("Opcio incorrecte")
@@ -530,9 +521,8 @@ programa barallaCartes ra = do
 main = do
   seed <- newStdGen
   let random = take 200 (randomRs (0 :: Int, 47) seed)
-  let quiReparteix = 2
-  let mans = reparteix [[],[],[],[]] (barreja baralla random) quiReparteix
-  --let pal = Butifarra
---  programa baralla random
-  partidaJugada <- jugar  mans (Pal Oros) (ronda (seguentJugador quiReparteix) [(seguentJugador quiReparteix)]) [] 2
-  putStrLn("hola")
+  programa baralla random
+--  let quiReparteix = 2
+--  let mans = reparteix [[],[],[],[]] (barreja baralla random) quiReparteix
+--  partidaJugada <- jugar mans (Pal Oros) (ronda (seguentJugador quiReparteix) [(seguentJugador quiReparteix)]) [] 2
+--  putStrLn("hola")
