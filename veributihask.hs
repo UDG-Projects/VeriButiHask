@@ -366,8 +366,32 @@ escullCartaATirar partida ma [] trumfu primerJugador = escullMillorSortida parti
 --escullCartaATirar partida ma [c1,c2,c3] trumfu primerJugador =
 
 
+----------------------------------------------------------------------------------------------------------------------------------
+-- MONADES TESTING
+----------------------------------------------------------------------------------------------------------------------------------
 
+pintaMans mans = do
+  putStrLn("## Ma del jugador 1 -> " ++ show (mans!!0))
+  putStrLn("## Ma del jugador 2 -> " ++ show (mans!!1))
+  putStrLn("## Ma del jugador 3 -> " ++ show (mans!!2))
+  putStrLn("## Ma del jugador 4 -> " ++ show (mans!!3))
 
+-- Donat el test (trampa o punts parelles), Les cartes del jugadors, el trumfu, la partida que s'ha jugat i el número de jugador que l'ha començat
+-- Pinta per pantalla en un format llegible el resultat d'executar el test.
+doTest textTitol numExplicacio mans trumfu partida jugador = do
+  putStrLn((titol textTitol))
+  putStrLn("## MANS : ")
+  putStrLn(separador)
+  pintaMans mans
+  putStrLn(separador)
+  putStrLn("## PARTIDA : ")
+  putStrLn(separador)
+  putStrLn(show partida)
+  putStrLn(separador)
+  putStrLn((explicacioTest 1))
+  putStrLn(separador)
+  putStrLn((capcalera jugador (seguentJugador jugador) (show trumfu)))
+  putStrLn("## Hi ha Trampa = " ++ show (trampa mans trumfu partida (seguentJugador jugador)))
 
 
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -389,6 +413,10 @@ mostraMenuTrampa = do
   putStrLn("5 - Error Refalla de gallines") -- Mata Amb trunfu quan encara l'in queden del pal de la basa
   putStrLn("6 - Error S'escapen ") --No dona l'As quan l'ha de posar
   putStrLn("7 - Error No Mata") -- el jugador no mata quan li toca matar
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- MONADES JUGAR PARTIDA
+----------------------------------------------------------------------------------------------------------------------------------
 
 -- Pre :
 -- Post :
@@ -417,7 +445,6 @@ jugar mans trumfu llistaJugadors partida playerReal = do
   let quiTira = (llistaJugadors!!(mod (length partida) 4))
   let quiTirara = (seguentJugador quiTira)
   let basa = lastN (mod (length partida) 4) partida
-  putStrLn( show(quiTira==playerReal))
   carta <- (tiraCarta (mans!!quiTira) trumfu basa (quiTira==playerReal))
   let novaBasa = basa++[carta]
   putStrLn("El jugador " ++ (show quiTira) ++ " tira " ++ (show carta))
@@ -429,30 +456,101 @@ jugar mans trumfu llistaJugadors partida playerReal = do
   else do
     jugar mans trumfu llistaJugadors (partida++[carta]) playerReal
 
--- Donat el test (trampa o punts parelles), Les cartes del jugadors, el trumfu, la partida que s'ha jugat i el número de jugador que l'ha començat
--- Pinta per pantalla en un format llegible el resultat d'executar el test.
-doTest textTitol numExplicacio mans trumfu partida jugador = do
-  putStrLn((titol textTitol))
-  putStrLn("## MANS : ")
-  putStrLn(separador)
-  putStrLn("## Ma del jugador 1 -> " ++ show (mans!!0))
-  putStrLn("## Ma del jugador 2 -> " ++ show (mans!!1))
-  putStrLn("## Ma del jugador 3 -> " ++ show (mans!!2))
-  putStrLn("## Ma del jugador 4 -> " ++ show (mans!!3))
-  putStrLn(separador)
-  putStrLn("## PARTIDA : ")
-  putStrLn(separador)
-  putStrLn(show partida)
-  putStrLn(separador)
-  putStrLn((explicacioTest 1))
-  putStrLn(separador)
-  putStrLn((capcalera jugador (seguentJugador jugador) (show trumfu)))
-  putStrLn("## Hi ha Trampa = " ++ show (trampa mans trumfu partida (seguentJugador jugador)))
+-- Pre :
+-- Post :
+pucContrar :: [Carta] -> Bool
+pucContrar ma = (length manilles) > 1
+  where
+    manilles = [ x | x <- ma , (\(Carta tp p) -> tp == Manilla) x ]
 
+-- Pre :
+-- Post :
+tincButifarra :: [Carta] -> Bool
+tincButifarra ma = (length asos) >= 1 && (length manilles) >= 2
+  where
+    asos = [ x | x <- ma , (\(Carta tp p) -> tp == As) x ]
+    manilles = [ x | x <- ma , (\(Carta tp p) -> tp == Manilla) x ]
+
+-- Pre :
+-- Post :
+tincSemiFalloOFallo :: [Carta] -> Bool
+tincSemiFalloOFallo ma = or [ (length y) <= 1 | y <- [ cartesPal ma x | x <- [(Oros)..(Bastos)]]]
+
+-- Pre : Donada una ma i si està o no obligat a fer trumfu
+-- Post : retorna nothing si pot no fer-ho i no ho fa o El trumfu escollit.
+escullTrumfu :: [Carta] -> Bool -> Maybe (Trumfu)
+escullTrumfu ma obligat
+  | tincButifarra ma = Just (Butifarra)
+  | obligat || (tincSemiFalloOFallo ma) = Just maxPal
+  | otherwise = Nothing
+  where
+    maxPal = (\(Carta tp p)->(Pal p)) (head (snd (maximum [ (length y, y) | y <- [cartesPal ma x | x <- [(Oros)..(Bastos)] ] ] ) ) )
+
+-- Pre :
+-- Post :
+decidirTrumfuBot :: [[Carta]] -> Int -> Trumfu
+decidirTrumfuBot mans posJugadorDecideix
+  | trumfu == Nothing = (\(Just x)->x) (escullTrumfu (mans!!company) True)
+  | otherwise = (\(Just x)->x) trumfu
+  where
+    company = (seguentJugador (seguentJugador (posJugadorDecideix)))
+    trumfu = (escullTrumfu (mans!!posJugadorDecideix) False)
+
+-- Pre :
+-- Post :
+escullContro :: [Carta] -> Bool -> Int -> IO (Bool)
+escullContro ma esReal multiplicador = do
+  if esReal then do
+    if multiplicador == 1 then do
+      putStrLn("Entra un 1 si vols contrar")
+    else if multiplicador == 2 then do
+      putStrLn("Entra un 1 si vols recontrar")
+    else do
+      putStrLn("Entra un 1 si vols fer un Sant Vicenç")
+    putStrLn(show ma)
+    opcio <- getLine
+    let numOp = (read opcio :: Int)
+    return (numOp == 1)
+  else
+    return (pucContrar ma)
+
+-- Pre :
+-- Post :
+rodaContrar :: [[Carta]] -> Int -> Int -> Int -> Int -> IO (Int)
+rodaContrar mans quiContra jugadorReal multiplicador accepten = do
+  if (multiplicador == 8) || (accepten == 2) then do return (multiplicador)
+  else do
+    haContrat <- escullContro (mans!!quiContra) (quiContra == jugadorReal) multiplicador
+    if haContrat then do
+      rodaContrar mans (seguentJugador quiContra) jugadorReal ((*) multiplicador 2) 0
+    else
+      rodaContrar mans (seguentJugador (seguentJugador quiContra)) jugadorReal multiplicador (accepten + 1)
+
+
+-- Pre : Donades la baralla, els punts dels equips en forma de tupla de enters
+-- Post : va generant mans fins que un equip arriva a 101 i per tant guanya la partida.
+partidaNova barallaCartes punts jugadorBarreja ra jugadorReal = do
+  putStrLn (separador)
+  putStrLn ("## Comencem partida")
+  putStrLn (separador)
+  let quiReparteix = (seguentJugador jugadorBarreja)
+  let quiSurt = (seguentJugador quiReparteix)
+  let mans = (reparteix [[],[],[],[]] (barreja barallaCartes ra) quiReparteix)
+  let trumfu = decidirTrumfuBot mans quiReparteix
+  putStrLn("## S'ha fet trumfus : " ++ (show trumfu))
+  multiplicador <- rodaContrar mans quiSurt jugadorReal 1 0
+  putStrLn("## S'aplicarà el multiplicador : " ++ (show multiplicador))
+  partida <- jugar mans trumfu ((ronda quiSurt [quiSurt])) [] jugadorReal
+  let hiHaTrampa = trampa mans trumfu partida quiSurt
+  if hiHaTrampa == Nothing then
+    putStrLn("S'ha acabat la partida i no hi ha trampa")
+    -- SUMAR PUNTS
+  else
+    putStrLn("RENUNCIO!!!!\n " ++ (show hiHaTrampa))
+  --jugar mans
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Programa Principal
 ----------------------------------------------------------------------------------------------------------------------------------
-
 
 menuTrampes = do
   opcio <- getLine
@@ -511,7 +609,7 @@ programa barallaCartes ra = do
     menuTrampes
     programa barallaCartes ra
   else if numOpcio == 4 then do
-
+    partidaNova barallaCartes (0,0) 0 ra 0
     main
   else do
     putStrLn("Opcio incorrecte")
