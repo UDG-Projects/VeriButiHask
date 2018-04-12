@@ -11,6 +11,24 @@ testMans = [
   , [Carta Sis Oros, Carta Tres Espases, Carta Tres Oros, Carta Manilla Copes, Carta Cavall Copes, Carta Rei Espases, Carta Cavall Bastos, Carta Dos Espases, Carta Sis Espases, Carta Quatre Bastos, Carta Sis Copes, Carta Cinc Bastos]
   ]
 
+mansJugadaMaquina = [
+  [Carta Cavall Bastos, Carta Cavall Copes, Carta Manilla Oros, Carta Cinc Espases, Carta As Espases, Carta Dos Oros, Carta Dos Bastos, Carta Dos Espases, Carta Sis Oros, Carta Set Bastos, Carta Sis Copes, Carta Set Oros],
+  [Carta As Bastos, Carta Vuit Copes, Carta Vuit Oros, Carta Manilla Espases, Carta Rei Espases, Carta Cinc Oros, Carta Sota Bastos, Carta Sota Espases, Carta Quatre Oros, Carta Cinc Bastos, Carta Dos Copes, Carta Tres Oros],
+  [Carta Manilla Bastos, Carta Manilla Copes, Carta As Oros, Carta Set Espases, Carta Sis Espases, Carta Rei Oros, Carta Quatre Bastos, Carta Rei Copes, Carta Sota Oros, Carta Tres Bastos, Carta Sota Copes, Carta Set Copes],
+  [Carta Rei Bastos, Carta As Copes, Carta Cavall Oros, Carta Cavall Espases, Carta Vuit Espases, Carta Cinc Copes, Carta Vuit Bastos, Carta Quatre Espases, Carta Quatre Copes, Carta Sis Bastos, Carta Tres Copes, Carta Tres Espases]]
+
+partidaJugadaMaquina = [ Carta Manilla Bastos, Carta Rei Bastos, Carta Cavall Bastos ,Carta As Bastos
+  , Carta Manilla Copes , Carta As Copes ,Carta Cavall Copes, Carta Vuit Copes
+  , Carta As Oros, Carta Cavall Oros ,Carta Manilla Oros, Carta Vuit Oros
+  , Carta Cinc Espases, Carta Manilla Espases, Carta Set Espases ,Carta Cavall Espases
+  , Carta Rei Espases, Carta Sis Espases, Carta Vuit Espases, Carta As Espases
+  , Carta Dos Oros, Carta Cinc Oros, Carta Rei Oros, Carta Cinc Copes
+  , Carta Vuit Bastos, Carta Dos Bastos, Carta Sota Bastos, Carta Quatre Bastos
+  , Carta Sota Espases, Carta Rei Copes ,Carta Quatre Espases,Carta Dos Espases
+  , Carta Sota Oros,Carta Quatre Copes,Carta Sis Oros,Carta Quatre Oros
+  , Carta Sis Bastos,Carta Set Bastos,Carta Cinc Bastos,Carta Tres Bastos
+  , Carta Sis Copes,Carta Dos Copes,Carta Sota Copes ,Carta Tres Copes
+  , Carta Set Copes, Carta Tres Espases,Carta Set Oros,Carta Tres Oros]
 test1 = [
  Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Sis Bastos,
  Carta Sota Bastos, Carta Dos Oros, Carta Dos Bastos, Carta Quatre Bastos,
