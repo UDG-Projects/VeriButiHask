@@ -1,0 +1,146 @@
+################################################################
+## Comencem partida
+################################################################
+## S'ha fet trumfus : C
+## S'aplicarà el multiplicador : 2
+El jugador 2 tira 9B
+El jugador 3 tira RB
+Basa actual:
+[9B,RB]
+Les teves cartes:
+[5E,9O,CB,2O,AE,6O,CC,6C,2E,7O,2B,7B]
+Tira una carta
+2
+El jugador 0 tira CB
+El jugador 1 tira AB
+La basa final es [9B,RB,CB,AB] i el que ha guanyat es 2
+El jugador 2 tira 9C
+El jugador 3 tira AC
+Basa actual:
+[9C,AC]
+Les teves cartes:
+[5E,9O,2O,AE,6O,CC,6C,2E,7O,2B,7B]
+Tira una carta
+5
+El jugador 0 tira CC
+El jugador 1 tira 8C
+La basa final es [9C,AC,CC,8C] i el que ha guanyat es 2
+El jugador 2 tira AO
+El jugador 3 tira CO
+Basa actual:
+[AO,CO]
+Les teves cartes:
+[5E,9O,2O,AE,6O,6C,2E,7O,2B,7B]
+Tira una carta
+1
+El jugador 0 tira 9O
+El jugador 1 tira 8O
+La basa final es [AO,CO,9O,8O] i el que ha guanyat es 0
+Basa actual:
+[]
+Les teves cartes:
+[5E,2O,AE,6O,6C,2E,7O,2B,7B]
+Tira una carta
+0
+El jugador 0 tira 5E
+El jugador 1 tira 9E
+El jugador 2 tira 7E
+El jugador 3 tira CE
+La basa final es [5E,9E,7E,CE] i el que ha guanyat es 1
+El jugador 1 tira RE
+El jugador 2 tira 6E
+El jugador 3 tira 8E
+Basa actual:
+[RE,6E,8E]
+Les teves cartes:
+[2O,AE,6O,6C,2E,7O,2B,7B]
+Tira una carta
+1
+El jugador 0 tira AE
+La basa final es [RE,6E,8E,AE] i el que ha guanyat es 0
+Basa actual:
+[]
+Les teves cartes:
+[2O,6O,6C,2E,7O,2B,7B]
+Tira una carta
+0
+El jugador 0 tira 2O
+El jugador 1 tira 5O
+El jugador 2 tira RO
+El jugador 3 tira 5C
+La basa final es [2O,5O,RO,5C] i el que ha guanyat es 3
+El jugador 3 tira 8B
+Basa actual:
+[8B]
+Les teves cartes:
+[6O,6C,2E,7O,2B,7B]
+Tira una carta
+4
+El jugador 0 tira 2B
+El jugador 1 tira SB
+El jugador 2 tira 4B
+La basa final es [8B,2B,SB,4B] i el que ha guanyat es 1
+El jugador 1 tira SE
+El jugador 2 tira RC
+El jugador 3 tira 4E
+Basa actual:
+[SE,RC,4E]
+Les teves cartes:
+[6O,6C,2E,7O,7B]
+Tira una carta
+2
+El jugador 0 tira 2E
+La basa final es [SE,RC,4E,2E] i el que ha guanyat es 2
+El jugador 2 tira SO
+El jugador 3 tira 4C
+Basa actual:
+[SO,4C]
+Les teves cartes:
+[6O,6C,7O,7B]
+Tira una carta
+0
+El jugador 0 tira 6O
+El jugador 1 tira 4O
+La basa final es [SO,4C,6O,4O] i el que ha guanyat es 3
+El jugador 3 tira 6B
+Basa actual:
+[6B]
+Les teves cartes:
+[6C,7O,7B]
+Tira una carta
+2
+El jugador 0 tira 7B
+El jugador 1 tira 5B
+El jugador 2 tira 3B
+La basa final es [6B,7B,5B,3B] i el que ha guanyat es 0
+Basa actual:
+[]
+Les teves cartes:
+[6C,7O]
+Tira una carta
+0
+El jugador 0 tira 6C
+El jugador 1 tira 2C
+El jugador 2 tira SC
+El jugador 3 tira 3C
+La basa final es [6C,2C,SC,3C] i el que ha guanyat es 2
+El jugador 2 tira 7C
+El jugador 3 tira 3E
+Basa actual:
+[7C,3E]
+Les teves cartes:
+[7O]
+Tira una carta
+0
+El jugador 0 tira 7O
+El jugador 1 tira 3O
+La basa final es [7C,3E,7O,3O] i el que ha guanyat es 2
+################################################################
+## PUNTS TOTALS :
+## [9B,RB,CB,AB,9C,AC,CC,8C,AO,CO,9O,8O,5E,9E,7E,CE,RE,6E,8E,AE,2O,5O,RO,5C,8B,2B,SB,4B,SE,RC,4E,2E,SO,4C,6O,4O,6B,7B,5B,3B,6C,2C,SC,3C,7C,3E,7O,3O]
+## EQUIP 1 : 0
+## EQUIP 2 : 40
+################################################################
+################################################################
+## Comencem partida
+################################################################

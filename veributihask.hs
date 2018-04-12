@@ -245,7 +245,7 @@ trampa :: [[Carta]] -> Trumfu -> [Carta] -> Int -> Maybe ([Carta],Int, Int)
 trampa _ _ [] _ = Nothing
 trampa ll trumfu pila jug =
   if or [fst x | x<-hiHaTrampa] then
-    Just (basa, (12 - (length (head ll))) + 1 , (head [snd x | x<-hiHaTrampa, (fst x)]) + 1)
+    Just (basa, (12 - (length (head ll))) + 1 , (head [snd x | x<-hiHaTrampa, (fst x)]))
   else trampa (extreu ll basa jug) trumfu (drop 4 pila) (properATirar basa trumfu jug) --(quiSortira jug (snd (quiGuanya basa trumfu)))
   where
     -- Mirem que les cartes estiguin dintre de jugades
@@ -418,6 +418,15 @@ mostraMenuTrampa = do
 -- MONADES JUGAR PARTIDA
 ----------------------------------------------------------------------------------------------------------------------------------
 
+pintaPuntsPartida partida punts = do
+  putStrLn(separador)
+  putStrLn("## PUNTS TOTALS :")
+  putStrLn("## " ++ (show partida))
+  putStrLn("## EQUIP 1 : " ++ (show (fst(punts))))
+  putStrLn("## EQUIP 2 : " ++ (show (snd(punts))))
+  putStrLn(separador)
+
+
 -- Pre :
 -- Post :
 tiraCarta :: [Carta] -> Trumfu -> [Carta] -> Bool -> IO (Carta)
@@ -451,7 +460,7 @@ jugar mans trumfu llistaJugadors partida playerReal = do
 
   if (llistaJugadors!!3) == quiTira then do
     let guanyador = properATirar novaBasa trumfu (head llistaJugadors)
-    putStrLn( "La basa final es" ++ (show novaBasa) ++ " i el que ha guanyat es " ++ (show guanyador))
+    putStrLn( "La basa final es " ++ (show novaBasa) ++ " i el que ha guanyat es " ++ (show guanyador))
     jugar (extreu mans (novaBasa) (head llistaJugadors)) trumfu (ronda guanyador [guanyador]) (partida++[carta]) playerReal
   else do
     jugar mans trumfu llistaJugadors (partida++[carta]) playerReal
@@ -501,12 +510,13 @@ decidirTrumfuBot mans posJugadorDecideix
 escullContro :: [Carta] -> Bool -> Int -> IO (Bool)
 escullContro ma esReal multiplicador = do
   if esReal then do
-    if multiplicador == 1 then do
-      putStrLn("Entra un 1 si vols contrar")
-    else if multiplicador == 2 then do
-      putStrLn("Entra un 1 si vols recontrar")
-    else do
-      putStrLn("Entra un 1 si vols fer un Sant Vicenç")
+    putStrLn("Entra un 1 si vols que valgui per 2")
+--    if multiplicador == 1 then do
+--      putStrLn("Entra un 1 si vols contrar")
+--    else if multiplicador == 2 then do
+--      putStrLn("Entra un 1 si vols recontrar")
+--    else do
+--      putStrLn("Entra un 1 si vols fer un Sant Vicenç")
     putStrLn(show ma)
     opcio <- getLine
     let numOp = (read opcio :: Int)
@@ -525,29 +535,57 @@ rodaContrar mans quiContra jugadorReal multiplicador accepten = do
       rodaContrar mans (seguentJugador quiContra) jugadorReal ((*) multiplicador 2) 0
     else
       rodaContrar mans (seguentJugador (seguentJugador quiContra)) jugadorReal multiplicador (accepten + 1)
+-- Pre :
+-- Post :
+sumaResultat :: (Int,Int) -> (Int, Int) -> Int -> (Int, Int)
+sumaResultat (actualEq1, actualEq2) (resEq1, resEq2) multiplicador =
+  (actualEq1 + ((*) (fst(diferencia)) multiplicador), actualEq2 + ((*) (snd(diferencia)) multiplicador))
+  where
+    diferencia = ((if (36 - resEq1) < 0 then 0 else (36 - resEq1)), (if (36 - resEq2) < 0 then 0 else (36 - resEq2)))
+
+-- Pre :
+-- Post :
+generaResultat :: Maybe (Int, Int) -> (Int, Int) -> Int ->  [[Carta]] -> Trumfu -> [Carta] -> Int -> IO ((Int, Int))
+generaResultat puntsPartida punts multiplicador mans trumfu partida quiSurt = do
+  if puntsPartida == Nothing then do
+    let hiHaTrampa = trampa mans trumfu partida quiSurt
+    putStrLn("RENUNCIO!!!!\n " ++ (show hiHaTrampa))
+    let trampos = ((\(Just (basa,posicio,jugador))->jugador) hiHaTrampa)
+    if (mod trampos 2) == 0 then
+      return (sumaResultat punts (0,36) 1)
+    else
+      return (sumaResultat punts (36,0) 1)
+  else do
+    let aSumar = (\(Just t)->t) puntsPartida
+    return (sumaResultat punts aSumar multiplicador)
 
 
 -- Pre : Donades la baralla, els punts dels equips en forma de tupla de enters
 -- Post : va generant mans fins que un equip arriva a 101 i per tant guanya la partida.
 partidaNova barallaCartes punts jugadorBarreja ra jugadorReal = do
   putStrLn (separador)
-  putStrLn ("## Comencem partida")
-  putStrLn (separador)
-  let quiReparteix = (seguentJugador jugadorBarreja)
-  let quiSurt = (seguentJugador quiReparteix)
-  let mans = (reparteix [[],[],[],[]] (barreja barallaCartes ra) quiReparteix)
-  let trumfu = decidirTrumfuBot mans quiReparteix
-  putStrLn("## S'ha fet trumfus : " ++ (show trumfu))
-  multiplicador <- rodaContrar mans quiSurt jugadorReal 1 0
-  putStrLn("## S'aplicarà el multiplicador : " ++ (show multiplicador))
-  partida <- jugar mans trumfu ((ronda quiSurt [quiSurt])) [] jugadorReal
-  let hiHaTrampa = trampa mans trumfu partida quiSurt
-  if hiHaTrampa == Nothing then
-    putStrLn("S'ha acabat la partida i no hi ha trampa")
-    -- SUMAR PUNTS
-  else
-    putStrLn("RENUNCIO!!!!\n " ++ (show hiHaTrampa))
-  --jugar mans
+  if fst(punts) >= 101 then
+      putStrLn("## HA GUANYAT L'EQUIP 1 QUE CONSTA DELS JUGADORS 0 i 2")
+  else if snd(punts) >= 101 then
+      putStrLn("## HA GUANYAT L'EQUIP 2 QUE CONSTA DELS JUGADORS 1 i 3")
+  else do
+    putStrLn ("## Comencem partida")
+    putStrLn (separador)
+    let quiReparteix = (seguentJugador jugadorBarreja)
+    let quiSurt = (seguentJugador quiReparteix)
+    let mans = (reparteix [[],[],[],[]] (barreja barallaCartes ra) quiReparteix)
+    let trumfu = decidirTrumfuBot mans quiReparteix
+    putStrLn("## S'ha fet trumfus : " ++ (show trumfu))
+    multiplicador <- rodaContrar mans quiSurt jugadorReal (if trumfu == Butifarra then 2 else 1) 0
+    putStrLn("## S'aplicarà el multiplicador : " ++ (show multiplicador))
+    partida <- jugar mans trumfu ((ronda quiSurt [quiSurt])) [] jugadorReal
+    resultatFinal <- generaResultat (puntsParelles mans trumfu partida quiSurt) punts multiplicador mans trumfu partida quiSurt
+    pintaPuntsPartida partida resultatFinal
+    partidaNova barallaCartes resultatFinal (seguentJugador jugadorBarreja) ra jugadorReal
+
+
+
+
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Programa Principal
 ----------------------------------------------------------------------------------------------------------------------------------
