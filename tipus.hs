@@ -34,7 +34,7 @@ basa1=[Carta Sota Bastos, Carta As Bastos, Carta Manilla Bastos, Carta Dos Basto
 -- newRand = newStdGen
 
 -- Tipus
-data Pal = Oros | Copes | Espases | Bastos deriving (Show, Eq, Enum)
+data Pal = Oros | Copes | Espases | Bastos deriving (Show, Eq, Enum, Read)
 
 
 data Trumfu = Butifarra | Pal Pal
@@ -47,10 +47,10 @@ instance Show Trumfu where
   show (Pal pal)   = show pal
 
 
-data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Eq, Ord, Enum)
+data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Eq, Ord, Enum, Read)
 
 
-data Carta = Carta TipusCarta Pal
+data Carta = Carta TipusCarta Pal deriving (Read)
 instance Eq Carta where
   Carta te pe == Carta td pd = (te == td) && (pe == pd)
 instance Show Carta where

@@ -57,7 +57,7 @@ capot = [
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Tipus
 ----------------------------------------------------------------------------------------------------------------------------------
-data Pal = Oros | Copes | Espases | Bastos deriving (Show, Eq, Enum)
+data Pal = Oros | Copes | Espases | Bastos deriving (Show, Eq, Enum, Read)
 
 data Trumfu = Butifarra | Pal Pal
 instance Eq Trumfu where
@@ -68,20 +68,22 @@ instance Show Trumfu where
   show (Butifarra) = "Butifarra"
   show (Pal pal)   = show pal
 
-data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Eq, Ord, Enum)
+data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Eq, Ord, Enum, Read)
 
-data Carta = Carta TipusCarta Pal
+data Carta = Carta TipusCarta Pal deriving (Show, Read)
 instance Eq Carta where
   Carta te pe == Carta td pd = (te == td) && (pe == pd)
-instance Show Carta where
-  show (Carta a Bastos) = show a ++ " de " ++ show Bastos
-  show (Carta a Copes) = show a ++ " de " ++ show Copes
-  show (Carta a b)   = show a ++ " d'" ++ show b
+--instance Show Carta where
+--  show (Carta a Bastos) = show a ++ " de " ++ show Bastos
+--  show (Carta a Copes) = show a ++ " de " ++ show Copes
+--  show (Carta a b)   = show a ++ " d'" ++ show b
 instance Ord Carta where
   (Carta te pe) <= (Carta td pd) = te <= td
 instance Enum Carta where
   toEnum x = (Carta (toEnum (mod x 12)) (toEnum (div x 12)))
   fromEnum (Carta tipus pal) = ((fromEnum tipus)) + ((fromEnum pal) * 12)
+
+
 
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Funcions
@@ -89,6 +91,14 @@ instance Enum Carta where
 
 baralla :: [Carta]
 baralla = [(Carta Dos Oros)..(Carta Manilla Bastos)]
+
+ronda:: Int -> [Int] -> [Int]
+ronda primer llista = if (length llista) < 4 then  (ronda jugador novaLlista) else llista
+ where
+   jugador = seguentJugador primer
+   novaLlista =llista ++ [jugador]
+
+
 
 -- Pre : Donada una carta
 -- Post : Retorna el seu valor en punts
@@ -101,8 +111,8 @@ valor (Carta tc _)
   | tc == Sota    = 1
   | otherwise     = 0
 
--- Pre : 0 < [x && y] < 5
--- Post : [1-4] referent al proper a tirar.
+-- Pre : 0 <= [x && y] < 4
+-- Post : [0-3] referent al proper a tirar.
 quiSortira :: Int -> Int -> Int
 quiSortira x y = (mod ( x + y)  4)
 --  | modul == 0 = 4
@@ -302,11 +312,8 @@ reparteix mans cartes jugador = reparteix novaMans (drop 4 cartes) (seguentJugad
 --  | jugador == 4 = reparteix [a, b, c, d ++ [c1,c2,c3,c4]] pila (seguentJugador jugador)
 --  | otherwise = [a,b,c,d]
 
-updateMatrix :: [[a]] -> a -> (Int, Int) -> [[a]]
-updateMatrix m x (r,c) =
-  take r m ++
-  [take c (m !! r) ++ [x] ++ drop (c + 1) (m !! r)] ++
-  drop (r + 1) m
+tiraCartaBot :: [Carta] -> Trumfu -> [Carta] -> Carta
+tiraCartaBot ma trumfu basa = maximum (jugades ma trumfu basa)
 
 -- Pre : Donades les mans, el trumfu de la partida i qui comença a jugar
 -- Post : Genera una partida de butifarra amb el criteri qui s'expressa dins del where ( TODO : Canviar a bassant oriental o occidental)
@@ -315,7 +322,7 @@ generarPartida [[],[],[],[]] _ _ = []
 generarPartida mans trumfu jug = basa ++ generarPartida (extreu mans basa jug) trumfu (properATirar basa trumfu jug)--(quiSortira (quiGuanya ))
   where
     -- Aquest maximum s'ha de canviar per un escull millor tirada
-    basa= [ maximum (jugades (mans!!(mod (jug + (n-1)) 4)) trumfu (take n basa)) | n <-[0..3] ]
+    basa= [ tiraCartaBot  (mans!!(mod (jug + (n-1)) 4)) trumfu (take n basa) | n <-[0..3] ]
     --jug1 = (jug - 1)
     --jug2 = ((seguentJugador jug) - 1)
     --jug3 = ((seguentJugador (seguentJugador jug)) - 1)
@@ -399,14 +406,54 @@ mostraMenuTrampa = do
   putStrLn("6 - Error S'escapen ") --No dona l'As quan l'ha de posar
   putStrLn("7 - Error No Mata") -- el jugador no mata quan li toca matar
 
-main = do
+lastN :: Int -> [a] -> [a]
+lastN n xs = foldl (const . drop 1) xs (drop n xs)
 
-  seed <- newStdGen
-  let random = take 200 (randomRs (0 :: Int, 47) seed)
-  --let quiReparteix = 2
-  --  let mans = reparteix [[],[],[],[]] (barreja partida1 random) quiReparteix
-  --let pal = Butifarra
-  programa baralla random
+tiraCarta :: [Carta] -> Trumfu -> [Carta] -> Bool -> IO (Carta)
+tiraCarta ma trumfu basa esJugadorReal = do
+  if esJugadorReal then do
+    putStrLn("Basa actual:")
+    putStrLn( show basa)
+    putStrLn( "Les teves cartes:")
+    putStrLn( show (ma) )
+    putStrLn("Tira una carta")
+    opcio <- getLine
+    let numOp = (read opcio :: Int)
+  --  partida++[numOP]
+    let carta = (ma!!numOp)
+    return (carta)
+  else do
+    return (tiraCartaBot ma trumfu basa)
+
+jugar :: [[Carta]] -> Trumfu -> [Int] -> [Carta] -> Int -> IO ([Carta])
+jugar [[],[],[],[]] _ _  partida _ = do return (partida)
+jugar mans trumfu llistaJugadors partida playerReal = do
+
+  --let num = take 1 (mans!!quiTira)
+  let quiTira = (llistaJugadors!!(mod (length partida) 4))
+  let quiTirara = (seguentJugador quiTira)
+  let basa = lastN (mod (length partida) 4) partida
+  putStrLn( show(quiTira==playerReal))
+  cartaT <- (tiraCarta (mans!!quiTira) trumfu basa (quiTira==playerReal))
+  --let carta = (read (show cartaT))
+
+  putStrLn("El jugador " ++ (show quiTira) ++ " tira " ++ (show cartaT))
+
+  -- partida = partida ++ [carta]
+  -- return (partida)
+
+  if (llistaJugadors!!3) == quiTira then do
+    let guanyador = properATirar (basa ++[cartaT]) trumfu (head llistaJugadors)
+    putStrLn( "La basa final es" ++ show(basa++[cartaT]) ++ " i el que ha guanyat es " ++(show guanyador))
+    jugar (extreu mans (basa++[cartaT]) (head llistaJugadors)) trumfu (ronda guanyador [guanyador]) (partida++[cartaT]) playerReal
+    --putStrLn("Guanyador: "++(show guanyador))
+--    jugar (drop 1 randoms) (ronda guanyador [guanyador]) partida guanyador
+  else do
+    jugar mans trumfu llistaJugadors (partida++[cartaT]) playerReal
+
+
+
+
 
 funcioTrampes = do
   mostraMenuTrampa
@@ -478,3 +525,14 @@ programa barallaCartes ra = do
   else do
     putStrLn("Opcio incorrecte")
     main
+
+
+main = do
+  seed <- newStdGen
+  let random = take 200 (randomRs (0 :: Int, 47) seed)
+  let quiReparteix = 2
+  let mans = reparteix [[],[],[],[]] (barreja baralla random) quiReparteix
+  --let pal = Butifarra
+--  programa baralla random
+  partidaJugada <- jugar  mans (Pal Oros) (ronda (seguentJugador quiReparteix) [(seguentJugador quiReparteix)]) [] 2
+  putStrLn("hola")
