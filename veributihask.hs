@@ -1,4 +1,5 @@
 import System.Random
+import Drawable
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -52,10 +53,18 @@ capot = [
   , Carta Tres Bastos, Carta Sis Copes, Carta Set Copes, Carta Quatre Copes
   , Carta Set Bastos, Carta Cavall Copes, Carta As Copes, Carta Sota Copes
   , Carta Vuit Bastos, Carta Manilla Copes, Carta Vuit Copes, Carta Rei Copes]
+
+
+
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Tipus
 ----------------------------------------------------------------------------------------------------------------------------------
-data Pal = Oros | Copes | Espases | Bastos deriving (Show, Eq, Enum)
+data Pal = Oros | Copes | Espases | Bastos deriving (Eq, Enum)
+instance Show Pal where
+  show Oros = "O"
+  show Copes = "C"
+  show Espases = "E"
+  show Bastos = "B"
 
 data Trumfu = Butifarra | Pal Pal
 instance Eq Trumfu where
@@ -66,15 +75,24 @@ instance Show Trumfu where
   show (Butifarra) = "Butifarra"
   show (Pal pal)   = show pal
 
-data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Show, Eq, Ord, Enum)
+data TipusCarta = Dos | Tres | Quatre | Cinc | Sis | Set | Vuit | Sota | Cavall | Rei | As | Manilla deriving (Eq, Ord, Enum)
+
+instance Show TipusCarta where
+  show Sota = "S"
+  show Cavall = "C"
+  show Rei = "R"
+  show As = "A"
+  show Manilla = "9"
+  show x = show (fromEnum(x) + 2)
 
 data Carta = Carta TipusCarta Pal
 instance Eq Carta where
   Carta te pe == Carta td pd = (te == td) && (pe == pd)
 instance Show Carta where
-  show (Carta a Bastos) = show a ++ " de " ++ show Bastos
-  show (Carta a Copes) = show a ++ " de " ++ show Copes
-  show (Carta a b)   = show a ++ " d'" ++ show b
+  show (Carta a b) = show a ++ show b
+  --show (Carta a Bastos) = show a ++ " de " ++ show Bastos
+  --show (Carta a Copes) = show a ++ " de " ++ show Copes
+  --show (Carta a b)   = show a ++ " d'" ++ show b
 instance Ord Carta where
   (Carta te pe) <= (Carta td pd) = te <= td
 instance Enum Carta where
@@ -362,12 +380,8 @@ mostraMenu = do
   putStrLn("0 - Finalitzar Programa")
   putStrLn("1 - Remenar Baralla")
   putStrLn("2 - Repartir")
-  putStrLn("3 - Trampa")
-  putStrLn("4 - Cartes Guanyades")
-  putStrLn("5 - Punts")
-  putStrLn("6 - Punts Parelles")
-  putStrLn("7 - Jugar")
-
+  putStrLn("3 - Testos")
+  putStrLn("4 - Jugar")
 
 mostraMenuTrampa = do
   putStrLn("0 - Sortir del menu Trampa")
@@ -379,8 +393,27 @@ mostraMenuTrampa = do
   putStrLn("6 - Error S'escapen ") --No dona l'As quan l'ha de posar
   putStrLn("7 - Error No Mata") -- el jugador no mata quan li toca matar
 
-main = do
+-- Donat el test (trampa o punts parelles), Les cartes del jugadors, el trumfu, la partida que s'ha jugat i el número de jugador que l'ha començat
+-- Pinta per pantalla en un format llegible el resultat d'executar el test.
+doTest textTitol numExplicacio mans trumfu partida jugador = do
+  putStrLn((titol textTitol))
+  putStrLn("## MANS : ")
+  putStrLn(separador)
+  putStrLn("## Ma del jugador 1 -> " ++ show (mans!!0))
+  putStrLn("## Ma del jugador 2 -> " ++ show (mans!!1))
+  putStrLn("## Ma del jugador 3 -> " ++ show (mans!!2))
+  putStrLn("## Ma del jugador 4 -> " ++ show (mans!!3))
+  putStrLn(separador)
+  putStrLn("## PARTIDA : ")
+  putStrLn(separador)
+  putStrLn(show partida)
+  putStrLn(separador)
+  putStrLn((explicacioTest 1))
+  putStrLn(separador)
+  putStrLn((capcalera jugador (seguentJugador jugador) (show trumfu)))
+  putStrLn("## Hi ha Trampa = " ++ show (trampa mans trumfu partida (seguentJugador jugador)))
 
+main = do
   seed <- newStdGen
   let random = take 200 (randomRs (0 :: Int, 47) seed)
   --let quiReparteix = 2
@@ -388,35 +421,36 @@ main = do
   --let pal = Butifarra
   programa baralla random
 
-funcioTrampes = do
+menuTrampes = do
   opcio <- getLine
   let numOpcio = read opcio
   if numOpcio == 0 then do
     putStrLn("Retrocedir")
   else if numOpcio == 1 then do
-    putStrLn(show (trampa testMans (Pal Oros) test1 3))
-    funcioTrampes
+    doTest "Test 1" 1 testMans (Pal Oros) test1 2
+    menuTrampes
   else if numOpcio == 2 then do
-    putStrLn(show (trampa testMans Butifarra test2 2))
-    funcioTrampes
+    doTest "Test 2" 2 testMans Butifarra test2 1
+    --putStrLn(show (trampa testMans Butifarra test2 2))
+    menuTrampes
   else if numOpcio == 3 then do
-    putStrLn(show (trampa testMans (Pal Bastos) capot 4))
-    funcioTrampes
-
+    doTest "Test 3" 3 testMans (Pal Bastos) capot 3
+    --putStrLn(show (trampa testMans (Pal Bastos) capot 4))
+    menuTrampes
   else if numOpcio == 4 then do
     putStrLn("Es 1")
-    funcioTrampes
+    menuTrampes
   else if numOpcio == 5 then do
     putStrLn("Es 1")
-    funcioTrampes
+    menuTrampes
   else if numOpcio == 6 then do
     putStrLn("Es 1")
-    funcioTrampes
+    menuTrampes
   else if numOpcio == 7 then do
-    funcioTrampes
+    menuTrampes
   else do
     putStrLn("L'has cagat. Tria bé coi!!")
-    funcioTrampes
+    menuTrampes
 
 
 programa barallaCartes ra = do
@@ -441,18 +475,9 @@ programa barallaCartes ra = do
   else if numOpcio == 3 then do
     --Trampa
     mostraMenuTrampa
-    funcioTrampes
+    menuTrampes
     programa barallaCartes ra
   else if numOpcio == 4 then do
-    putStrLn("Es 1")
-    main
-  else if numOpcio == 5 then do
-    putStrLn("Es 1")
-    main
-  else if numOpcio == 6 then do
-    putStrLn("Es 1")
-    main
-  else if numOpcio == 7 then do
     putStrLn("Es 1")
     main
   else do
