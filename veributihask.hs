@@ -600,9 +600,9 @@ montaBasaPerMostrar quiTira cartes = mouCartesAlFinal (4 - quiTira) cartesComStr
 
 llegirOpcio :: Int -> IO (Int)
 llegirOpcio maxim = do
-  opcio <- getLine
+  opcio <-  getLine
   let numOp = (read opcio :: Int)
-  if numOp > maxim then do
+  if (numOp < 0) || (numOp > maxim) then do
     putStrLn("T'has passat animal!!! Tria bé!!")
     llegirOpcio maxim
   else
@@ -635,8 +635,9 @@ escullContro ma esReal multiplicador = do
   if esReal then do
     putStrLn("## Entra un 1 si vols que valgui per 2")
     putStrLn(mostraMa (show ma))
-    opcio <- getLine
-    let numOp = (read opcio :: Int)
+    --opcio <- getLine
+    numOp <- llegirOpcio 1
+    --let numOp = (read opcio :: Int)
     return (numOp == 1)
   else
     return (pucContrar ma)
@@ -692,8 +693,9 @@ decidirTrumfu mans quiDecideix jugadorReal saDelegat = do
       putStrLn("## 6 -> Delega")
       putStrLn("## Escull trufmu o delega : ")
     --mostraOpcionsTrumfu saDelegat -- MOstra les 6 opcions
-    opcio <- getLine
-    let trumfuEsc = read opcio
+    --opcio <- getLine
+    --let trumfuEsc = read opcio
+    trumfuEsc <- llegirOpcio (if saDelegat then 5 else 6)
     if (trumfuEsc >= 1) && (trumfuEsc <=4) then return (Just (Pal (toEnum(trumfuEsc - 1))))
     else if trumfuEsc == 5 then return (Just Butifarra)
     else do
@@ -741,8 +743,9 @@ partidaNova barallaCartes punts jugadorBarreja ra jugadorReal = do
 menuTrampes = do
   mostraMenuTrampa
   putStrLn(separador)
-  opcio <- getLine
-  let numOpcio = read opcio
+  --opcio <- getLine
+  --let numOpcio = read opcio
+  numOpcio <- llegirOpcio 6
   if numOpcio == 0 then do
     putStrLn("Retrocedir")
   else if numOpcio == 1 then do
@@ -771,8 +774,9 @@ menuTrampes = do
 programa barallaCartes ra = do
   --Generar Baralla
   mostraMenu
-  opcio <- getLine
-  let numOpcio = read opcio
+  --opcio <- getLine
+  --let numOpcio = read opcio
+  numOpcio <- llegirOpcio 4
   if numOpcio == 0 then
     putStrLn("Numero 0")
   else if numOpcio == 1 then do
@@ -787,8 +791,9 @@ programa barallaCartes ra = do
     putStrLn(separador)
     putStrLn(show barallaCartes)
     putStrLn("## Entra un jugador de 0 a 3 que serà el que rebrà la primera.")
-    jug <- getLine
-    let numJug = read jug
+    --jug <- getLine
+    --let numJug = read jug
+    numJug <- llegirOpcio 3
     let mans = reparteix [[],[],[],[]] barallaCartes numJug
     putStrLn(show mans)
     programa barallaCartes ra
