@@ -21,3 +21,23 @@ explicacioTest numeroTest
 
 mostraMa :: String -> String
 mostraMa ma = "## " ++ ma
+
+montaLinia :: Int -> Int -> Int -> String -> String -> String -> String
+montaLinia numLinia jugador1 jugador2 carta1 carta2 trumfu
+  | numLinia == 1 = "# QUI SURT : " ++ (show jugador1) ++"             JUGADOR " ++ (show jugador2) ++ "                           #"
+  | numLinia == 2 = "#                             " ++ carta1 ++ "                               #"
+  | numLinia == 3 = "# JUGADOR "++ (show jugador1)++ "           "++carta1++"               "++carta2++"            JUGADOR "++(show jugador2)++" #"
+  | numLinia == 4 = "#                             "++carta1++"                               #"
+  | numLinia == 5 = "#                          JUGADOR "++(show jugador1)++"                           #"
+  | numLinia == 6 = "#                                                   TRUMFU : "++trumfu++" #"
+
+mostraBasa :: Int -> [String] -> String -> String
+mostraBasa quiSurt cartes trumfu =
+  separador ++ "\n" ++
+  (montaLinia 1 quiSurt  2 "" "" "") ++ "\n" ++
+  (montaLinia 2 0 0 (cartes!!2) "" "") ++ "\n" ++
+  (montaLinia 3 3 1 (cartes!!3) (cartes!!1) "") ++ "\n" ++
+  (montaLinia 4 0 0 (cartes!!0) "" "") ++ "\n" ++
+  (montaLinia 5 0 0 "" "" "") ++ "\n" ++
+  (montaLinia 6 0 0 "" "" trumfu) ++ "\n" ++
+  separador ++ "\n"
