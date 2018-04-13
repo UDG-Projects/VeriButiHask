@@ -574,9 +574,10 @@ tiraCarta mans quiTira quiHaTiratPrimer trumfu basa esJugadorReal = do
     putStrLn((mostraBasa quiHaTiratPrimer (montaBasaPerMostrar quiHaTiratPrimer basa) (show trumfu)))
     putStrLn((mostraMa (show ma)))
     putStrLn("## Entra de 0 a n on n és menor al nombre de cartes de la ma: ")
-    opcio <- getLine
-    let numOp = (read opcio :: Int)
+    --opcio <- getLine
+  --  let numOp = (read opcio :: Int)
   --  partida++[numOP]
+    numOp <- (llegirOpcio ((length ma)-1))
     let carta = (ma!!numOp)
     return (carta)
   else do
@@ -598,7 +599,15 @@ montaBasaPerMostrar quiTira cartes = mouCartesAlFinal (4 - quiTira) cartesComStr
     cartesComStrings = [(show y) | y <- cartes ]
     cartesComStringBasaCompleta = completaBasaAmbNulls cartesComStrings
 
-
+llegirOpcio :: Int -> IO (Int)
+llegirOpcio maxim = do
+  opcio <- getLine
+  let numOp = (read opcio :: Int)
+  if numOp > maxim then do
+    putStrLn("T'has passat animal!!! Tria bé!!")
+    llegirOpcio maxim
+  else
+    return (numOp)
 
 -- Pre : Donades les mans dels jugadors, el trumfu, una llista amb l'ordre de tirada dels jugadors, la partida actual i el numero del jugador real [0-3]
 -- Post : Fa les accions pertinents per jugar cada mà. Retorna les cartes en ordre que s'han tirat durant la partida
