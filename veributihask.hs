@@ -506,8 +506,7 @@ doTest textTitol numExplicacio mans trumfu partida jugador = do
   else do
     let (basa, numeroBasa, jugador) = ((\(Just x)->x) infoTrampa)
     putStrLn(mostraTrampa (show basa) numeroBasa jugador)
-  putStrLn((explicacioTest 1))
-  putStrLn(separador)
+  putStrLn((explicacioTest numExplicacio))
     --putStrLn("## Hi ha Trampa = " ++ (show basa))  -- show (trampa mans trumfu partida jugador))
 
 
@@ -735,14 +734,13 @@ partidaNova barallaCartes punts jugadorBarreja ra jugadorReal = do
     pintaPuntsPartida partida resultatFinal
     partidaNova barallaCartes resultatFinal (seguentJugador jugadorBarreja) ra jugadorReal
 
-
-
-
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Programa Principal
 ----------------------------------------------------------------------------------------------------------------------------------
 
 menuTrampes = do
+  mostraMenuTrampa
+  putStrLn(separador)
   opcio <- getLine
   let numOpcio = read opcio
   if numOpcio == 0 then do
@@ -791,12 +789,11 @@ programa barallaCartes ra = do
     putStrLn("## Entra un jugador de 0 a 3 que serà el que rebrà la primera.")
     jug <- getLine
     let numJug = read jug
-    let mans = reparteix [[],[],[],[]] (barreja barallaCartes ra) numJug
+    let mans = reparteix [[],[],[],[]] barallaCartes numJug
     putStrLn(show mans)
     programa barallaCartes ra
   else if numOpcio == 3 then do
     --Trampa
-    mostraMenuTrampa
     menuTrampes
     programa barallaCartes ra
   else if numOpcio == 4 then do
