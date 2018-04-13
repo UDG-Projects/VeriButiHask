@@ -503,25 +503,6 @@ tincButifarra ma = (length asos) >= 1 && (length manilles) >= 2
 tincSemiFalloOFallo :: [Carta] -> Bool
 tincSemiFalloOFallo ma = or [ (length y) <= 1 | y <- [ cartesPal ma x | x <- [(Oros)..(Bastos)]]]
 
--- Pre : Donada una ma i si està o no obligat a fer trumfu
--- Post : retorna nothing si pot no fer-ho i no ho fa o El trumfu escollit.
-escullTrumfu :: [Carta] -> Bool -> Maybe (Trumfu)
-escullTrumfu ma obligat
-  | tincButifarra ma = Just (Butifarra)
-  | obligat || (tincSemiFalloOFallo ma) = Just maxPal
-  | otherwise = Nothing
-  where
-    maxPal = (\(Carta tp p)->(Pal p)) (head (snd (maximum [ (length y, y) | y <- [cartesPal ma x | x <- [(Oros)..(Bastos)] ] ] ) ) )
-
--- Pre :
--- Post :
-decidirTrumfuBot :: [[Carta]] -> Int -> Trumfu
-decidirTrumfuBot mans posJugadorDecideix
-  | trumfu == Nothing = (\(Just x)->x) (escullTrumfu (mans!!company) True)
-  | otherwise = (\(Just x)->x) trumfu
-  where
-    company = (seguentJugador (seguentJugador (posJugadorDecideix)))
-    trumfu = (escullTrumfu (mans!!posJugadorDecideix) False)
 
 -- Pre :
 -- Post :
@@ -577,6 +558,42 @@ generaResultat puntsPartida punts multiplicador mans trumfu partida quiSurt = do
     let aSumar = (\(Just t)->t) puntsPartida
     return (sumaResultat punts aSumar multiplicador)
 
+-- Pre : Donada una ma i si està o no obligat a fer trumfu
+-- Post : retorna nothing si pot no fer-ho i no ho fa o El trumfu escollit.
+escullTrumfu :: [Carta] -> Bool -> Maybe (Trumfu)
+escullTrumfu ma obligat
+  | tincButifarra ma = Just (Butifarra)
+  | obligat || (tincSemiFalloOFallo ma) = Just maxPal
+  | otherwise = Nothing
+  where
+    maxPal = (\(Carta tp p)->(Pal p)) (head (snd (maximum [ (length y, y) | y <- [cartesPal ma x | x <- [(Oros)..(Bastos)] ] ] ) ) )
+
+-- Pre :
+-- Post :
+decidirTrumfu :: [[Carta]] -> Int -> Int -> Bool -> IO (Maybe (Trumfu))
+decidirTrumfu mans quiDecideix jugadorReal saDelegat = do
+  let company = (seguentJugador (seguentJugador (quiDecideix)))
+  if quiDecideix == jugadorReal then do
+    --mostraMa (show (mans!!quiDecideix))
+    if saDelegat then do putStrLn("## Escull trufmu : ") else do putStrLn("## Escull trufmu o delega : ")
+    --mostraOpcionsTrumfu saDelegat -- MOstra les 6 opcions
+    opcio <- getLine
+    let trumfuEsc = read opcio
+    if (trumfuEsc >= 1) && (trumfuEsc <=4) then return (Just (Pal (toEnum(trumfuEsc - 1))))
+    else if trumfuEsc == 5 then return (Just Butifarra)
+    else do
+      if saDelegat then error "Havies d'escollir si o si "
+      else do
+        trumfu <- (decidirTrumfu mans company jugadorReal True)
+        return (trumfu)
+  else do
+    let trumfu = (escullTrumfu (mans!!quiDecideix) saDelegat)
+    if trumfu == Nothing then do
+      if company == jugadorReal then do
+        trumfuDecidit <- (decidirTrumfu mans company jugadorReal True)
+        return (trumfuDecidit)
+      else return (escullTrumfu (mans!!quiDecideix) True)
+    else return (trumfu)
 
 -- Pre : Donades la baralla, els punts dels equips en forma de tupla de enters
 -- Post : va generant mans fins que un equip arriva a 101 i per tant guanya la partida.
@@ -592,7 +609,10 @@ partidaNova barallaCartes punts jugadorBarreja ra jugadorReal = do
     let quiReparteix = (seguentJugador jugadorBarreja)
     let quiSurt = (seguentJugador quiReparteix)
     let mans = (reparteix [[],[],[],[]] (barreja barallaCartes ra) quiReparteix)
-    let trumfu = decidirTrumfuBot mans quiReparteix
+    putStrLn("## Es decideixen trumfus : ")
+    -- let trumfu = decidirTrumfuBot mans quiReparteix
+    trumfuDecidit <- decidirTrumfu mans quiReparteix jugadorReal False
+    let trumfu = (\(Just x)->x) trumfuDecidit
     putStrLn("## S'ha fet trumfus : " ++ (show trumfu))
     multiplicador <- rodaContrar mans quiSurt jugadorReal (if trumfu == Butifarra then 2 else 1) 0
     putStrLn("## S'aplicarà el multiplicador : " ++ (show multiplicador))
@@ -665,7 +685,7 @@ programa barallaCartes ra = do
     menuTrampes
     programa barallaCartes ra
   else if numOpcio == 4 then do
-    partidaNova barallaCartes (0,0) 0 ra 0
+    partidaNova barallaCartes (0,0) 0 ra 1
     main
   else do
     putStrLn("Opcio incorrecte")

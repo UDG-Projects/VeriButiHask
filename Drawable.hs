@@ -18,3 +18,6 @@ explicacioTest numeroTest
   | numeroTest == 5 = ""
   | numeroTest == 6 = ""
   | numeroTest == 7 = ""
+
+mostraMa :: String -> String
+mostraMa ma = "## " ++ ma
