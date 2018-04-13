@@ -8,8 +8,13 @@ testMans = [
   [Carta Cavall Espases, Carta Rei Oros, Carta Quatre Espases, Carta Set Copes, Carta As Espases, Carta Manilla Espases, Carta Manilla Bastos, Carta Sota Oros, Carta Vuit Copes, Carta As Copes, Carta Cinc Oros, Carta Sota Bastos]
   , [Carta Dos Copes, Carta Quatre Copes, Carta Manilla Oros, Carta Cavall Oros, Carta Rei Copes, Carta Cinc Espases, Carta Vuit Espases, Carta Dos Oros, Carta As Oros, Carta Sota Copes, Carta Sis Bastos, Carta Quatre Oros]
   , [Carta Vuit Bastos, Carta Set Espases, Carta Set Oros, Carta Tres Copes, Carta Sota Espases, Carta Tres Bastos, Carta Set Bastos, Carta Vuit Oros, Carta Cinc Copes, Carta As Bastos, Carta Dos Bastos, Carta Rei Bastos]
-  , [Carta Sis Oros, Carta Tres Espases, Carta Tres Oros, Carta Manilla Copes, Carta Cavall Copes, Carta Rei Espases, Carta Cavall Bastos, Carta Dos Espases, Carta Sis Espases, Carta Quatre Bastos, Carta Sis Copes, Carta Cinc Bastos]
-  ]
+  , [Carta Sis Oros, Carta Tres Espases, Carta Tres Oros, Carta Manilla Copes, Carta Cavall Copes, Carta Rei Espases, Carta Cavall Bastos, Carta Dos Espases, Carta Sis Espases, Carta Quatre Bastos, Carta Sis Copes, Carta Cinc Bastos]]
+
+maSescapa = [
+  [Carta Cavall Espases, Carta Rei Oros, Carta Quatre Espases, Carta Set Copes, Carta As Espases, Carta Manilla Espases, Carta Manilla Bastos, Carta Sota Oros, Carta Vuit Copes, Carta As Copes, Carta Cinc Oros, Carta Sota Bastos]
+  ,[Carta Dos Bastos, Carta Quatre Copes, Carta Manilla Oros, Carta Cavall Oros, Carta Manilla Copes, Carta Cinc Espases, Carta Vuit Espases, Carta Dos Oros, Carta As Oros, Carta Sota Copes, Carta Sis Bastos, Carta Quatre Oros]
+  ,[Carta Vuit Bastos, Carta Set Espases, Carta Set Oros, Carta Tres Copes, Carta Sota Espases, Carta Tres Bastos, Carta Set Bastos, Carta Vuit Oros, Carta Cinc Copes, Carta As Bastos, Carta Dos Copes, Carta Rei Bastos]
+  ,[Carta Sis Oros, Carta Tres Espases, Carta Tres Oros, Carta Rei Copes, Carta Cavall Copes, Carta Rei Espases, Carta Cavall Bastos, Carta Dos Espases, Carta Sis Espases, Carta Quatre Bastos, Carta Sis Copes, Carta Cinc Bastos]]
 
 mansJugadaMaquina = [
   [Carta Cavall Bastos, Carta Cavall Copes, Carta Manilla Oros, Carta Cinc Espases, Carta As Espases, Carta Dos Oros, Carta Dos Bastos, Carta Dos Espases, Carta Sis Oros, Carta Set Bastos, Carta Sis Copes, Carta Set Oros],
@@ -29,6 +34,7 @@ partidaJugadaMaquina = [ Carta Manilla Bastos, Carta Rei Bastos, Carta Cavall Ba
   , Carta Sis Bastos,Carta Set Bastos,Carta Cinc Bastos,Carta Tres Bastos
   , Carta Sis Copes,Carta Dos Copes,Carta Sota Copes ,Carta Tres Copes
   , Carta Set Copes, Carta Tres Espases,Carta Set Oros,Carta Tres Oros]
+
 test1 = [
  Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Sis Bastos,
  Carta Sota Bastos, Carta Dos Oros, Carta Dos Bastos, Carta Quatre Bastos,
@@ -45,7 +51,7 @@ test1 = [
 
 test2 =
   [
-  Carta Sota Copes, Carta Tres Copes, Carta Manilla Copes, Carta Set Copes
+    Carta Sota Copes, Carta Tres Copes, Carta Manilla Copes, Carta Set Copes
   , Carta Sis Copes, Carta As Copes, Carta Dos Copes, Carta Cinc Copes
   , Carta Sota Oros, Carta Manilla Oros, Carta Set Oros, Carta Tres Oros
   , Carta As Oros, Carta Vuit Oros, Carta Sis Oros, Carta Cinc Oros
@@ -59,7 +65,7 @@ test2 =
   , Carta Vuit Bastos, Carta Rei Espases, Carta Cavall Espases, Carta Cavall Oros]
 
 capot = [
-  Carta Rei Espases, Carta Manilla Espases, Carta Cinc Espases, Carta Sota Espases
+    Carta Rei Espases, Carta Manilla Espases, Carta Cinc Espases, Carta Sota Espases
   , Carta Manilla Bastos, Carta Sis Bastos, Carta Dos Bastos, Carta Quatre Bastos
   , Carta Sota Bastos, Carta Dos Copes, Carta As Bastos, Carta Cinc Bastos
   , Carta Rei Bastos, Carta Cavall Bastos, Carta Rei Oros, Carta Vuit Espases
@@ -71,6 +77,48 @@ capot = [
   , Carta Tres Bastos, Carta Sis Copes, Carta Set Copes, Carta Quatre Copes
   , Carta Set Bastos, Carta Cavall Copes, Carta As Copes, Carta Sota Copes
   , Carta Vuit Bastos, Carta Manilla Copes, Carta Vuit Copes, Carta Rei Copes]
+
+fallaGallina = [
+ Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Dos Oros,
+ Carta Sota Bastos, Carta Sis Bastos, Carta Dos Bastos, Carta Quatre Bastos,
+ Carta Manilla Oros, Carta Set Oros, Carta Tres Oros, Carta Cinc Oros,
+ Carta As Oros, Carta Vuit Oros, Carta Sis Oros, Carta Sota Oros,
+ Carta Quatre Oros, Carta Tres Copes, Carta Dos Espases, Carta Rei Oros,
+ Carta Manilla Espases, Carta Cinc Espases, Carta Set Espases, Carta Tres Espases,
+ Carta As Espases, Carta Vuit Espases, Carta Sota Espases, Carta Sis Espases,
+ Carta Vuit Copes, Carta Rei Copes, Carta Cinc Copes, Carta Cavall Copes,
+ Carta Sota Copes, Carta Tres Bastos, Carta Manilla Copes, Carta Set Copes,
+ Carta Rei Espases, Carta Quatre Espases, Carta Dos Copes, Carta Set Bastos,
+ Carta Cinc Bastos, Carta Cavall Espases, Carta Quatre Copes, Carta As Bastos,
+ Carta Rei Bastos, Carta Sis Copes, Carta As Copes, Carta Cavall Oros]
+
+refallaGallina = [
+ Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Sis Bastos,
+ Carta Sota Bastos, Carta Dos Oros, Carta Vuit Oros, Carta Quatre Bastos,
+ Carta Manilla Oros, Carta Set Oros, Carta Tres Oros, Carta Cinc Oros,
+ Carta As Oros, Carta Dos Bastos, Carta Sis Oros, Carta Sota Oros,
+ Carta Quatre Oros, Carta Tres Copes, Carta Dos Espases, Carta Rei Oros,
+ Carta Manilla Espases, Carta Cinc Espases, Carta Set Espases, Carta Tres Espases,
+ Carta As Espases, Carta Vuit Espases, Carta Sota Espases, Carta Sis Espases,
+ Carta Vuit Copes, Carta Rei Copes, Carta Cinc Copes, Carta Cavall Copes,
+ Carta Sota Copes, Carta Tres Bastos, Carta Manilla Copes, Carta Set Copes,
+ Carta Rei Espases, Carta Quatre Espases, Carta Dos Copes, Carta Set Bastos,
+ Carta Cinc Bastos, Carta Cavall Espases, Carta Quatre Copes, Carta As Bastos,
+ Carta Rei Bastos, Carta Sis Copes, Carta As Copes, Carta Cavall Oros]
+
+sescapa = [
+  Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Dos Bastos
+  , Carta Sota Bastos, Carta Sis Bastos, Carta As Bastos, Carta Quatre Bastos
+  , Carta Cinc Copes, Carta Cavall Copes, Carta Set Copes, Carta Manilla Copes
+  , Carta Manilla Oros, Carta Set Oros, Carta Tres Oros, Carta Cinc Oros
+  , Carta As Oros, Carta Vuit Oros, Carta Sis Oros, Carta Sota Oros
+  , Carta Sota Copes, Carta Dos Copes, Carta Rei Copes, Carta As Copes
+  , Carta Manilla Espases, Carta Cinc Espases, Carta Set Espases, Carta Dos Espases
+  , Carta As Espases, Carta Vuit Espases, Carta Sota Espases, Carta Tres Espases
+  , Carta Cavall Espases, Carta Dos Oros, Carta Tres Espases, Carta Rei Espases
+  , Carta Quatre Oros, Carta Tres Bastos, Carta Cinc Bastos, Carta Rei Oros
+  , Carta Quatre Espases, Carta Cavall Oros, Carta Set Bastos, Carta Sis Espases
+  , Carta Quatre Copes, Carta Rei Bastos, Carta Sis Copes, Carta Vuit Copes]
 
 ----------------------------------------------------------------------------------------------------------------------------------
 -- Tipus
@@ -396,6 +444,7 @@ pintaMans mans = do
 
 -- Donat el test (trampa o punts parelles), Les cartes del jugadors, el trumfu, la partida que s'ha jugat i el número de jugador que l'ha començat
 -- Pinta per pantalla en un format llegible el resultat d'executar el test.
+-- doTest "Test 1" 1 testMans (Pal Oros) test1 2
 doTest textTitol numExplicacio mans trumfu partida jugador = do
   putStrLn((titol textTitol))
   putStrLn("## MANS : ")
@@ -409,7 +458,7 @@ doTest textTitol numExplicacio mans trumfu partida jugador = do
   putStrLn((explicacioTest 1))
   putStrLn(separador)
   putStrLn((capcalera jugador (seguentJugador jugador) (show trumfu)))
-  putStrLn("## Hi ha Trampa = " ++ show (trampa mans trumfu partida (seguentJugador jugador)))
+  putStrLn("## Hi ha Trampa = " ++ show (trampa mans trumfu partida jugador))
 
 
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -638,22 +687,18 @@ menuTrampes = do
     menuTrampes
   else if numOpcio == 2 then do
     doTest "Test 2" 2 testMans Butifarra test2 1
-    --putStrLn(show (trampa testMans Butifarra test2 2))
     menuTrampes
   else if numOpcio == 3 then do
     doTest "Test 3" 3 testMans (Pal Bastos) capot 3
-    --putStrLn(show (trampa testMans (Pal Bastos) capot 4))
     menuTrampes
   else if numOpcio == 4 then do
-    putStrLn("Es 1")
+    doTest "Falla de Gallines" 4 testMans (Pal Oros) fallaGallina 2
     menuTrampes
   else if numOpcio == 5 then do
-    putStrLn("Es 1")
+    doTest "Realla de Gallines" 5 testMans (Pal Oros) refallaGallina 2
     menuTrampes
   else if numOpcio == 6 then do
-    putStrLn("Es 1")
-    menuTrampes
-  else if numOpcio == 7 then do
+    doTest "S'escapen" 6 maSescapa (Pal Oros) sescapa 2
     menuTrampes
   else do
     putStrLn("L'has cagat. Tria bé coi!!")
