@@ -13,12 +13,15 @@ explicacioTest :: Int -> String
 explicacioTest numeroTest
   | numeroTest == 1 = "## La partida acaba sense trampa, l'equip 1 format per els \n"  ++
                       "## jugadors J0 i J2 perden la partida."
-  | numeroTest == 2 = "## La partida acaba sense tramapa l'equip "
-  | numeroTest == 3 = ""
-  | numeroTest == 4 = ""
-  | numeroTest == 5 = ""
-  | numeroTest == 6 = ""
-  | numeroTest == 7 = ""
+  | numeroTest == 2 = "## La partida acaba sense trampa l'equip 1 format per els \n" ++
+                      "## jugadors J0 i J2 guanyen la partida i fan 8 punts."
+  | numeroTest == 3 = "## L'equip 1 li fot un capot de campionat a l'equip 2, \n" ++
+                      "## Un dels integrants de l'equip 2 fa bejenades."
+  | numeroTest == 4 = "## El jugador que fa trampes no falla quan ha de fallar!!!"
+  | numeroTest == 5 = "## El jugador que fa trampes no Refalla quan ha de Refallar!!!"
+  | numeroTest == 6 = "## En aquest test es comprova la obligació de matar, com que \n" ++
+                      "## no mata falla per aquí, també es comprova que no tira la \n" ++
+                      "## carta que li pertoca"
 
 mostraMa :: String -> String
 mostraMa linia
@@ -48,8 +51,6 @@ mostraBasa quiSurt cartes trumfu =
 
 mostraTrampa :: String -> Int -> Int -> String
 mostraTrampa basa numeroBasa jugador =
-  separador ++ "\n" ++
   mostraMa "RENÚNCIO!!" ++ "\n" ++
   "## S'ha trobat trampa a la basa " ++ (show basa) ++ " amb numero " ++ (show numeroBasa) ++ "\n" ++
-  "## El jugador que ha fet la trampa és : " ++ (show jugador) ++ "\n" ++
-  separador
+  "## El jugador que ha fet la trampa és : " ++ (show jugador)
