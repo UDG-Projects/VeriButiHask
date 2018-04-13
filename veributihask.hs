@@ -115,12 +115,12 @@ instance Enum Carta where
 -- Funcions
 ----------------------------------------------------------------------------------------------------------------------------------
 
--- Pre :
--- Post :
+-- Pre : True
+-- Post : Retorna una baralla de cartes de Butifarra ordenada del Dos d'oros a la Manilla De Bastos
 baralla :: [Carta]
 baralla = [(Carta Dos Oros)..(Carta Manilla Bastos)]
 
--- Pre :
+-- Pre : TODO: [ (seguentJugador (y+x))  | x <-[0..2]]
 -- Post :
 ronda:: Int -> [Int] -> [Int]
 ronda primer llista = if (length llista) < 4 then  (ronda jugador novaLlista) else llista
@@ -129,14 +129,14 @@ ronda primer llista = if (length llista) < 4 then  (ronda jugador novaLlista) el
    novaLlista =llista ++ [jugador]
 
 
--- Pre :
--- Post :
+-- Pre : Donat un nombre n i una llista d'elements
+-- Post : Retorna els n ultims elements de la llista
 lastN :: Int -> [a] -> [a]
 lastN n xs = foldl (const . drop 1) xs (drop n xs)
 
 
 -- Pre : Donada una carta
--- Post : Retorna el seu valor en punts
+-- Post : Retorna el seu valor en punts en seguint la puntuacio a la Butifarra
 valor :: Carta -> Int
 valor (Carta tc _)
   | tc == Manilla = 5
@@ -146,8 +146,8 @@ valor (Carta tc _)
   | tc == Sota    = 1
   | otherwise     = 0
 
--- Pre : 0 <= [x && y] < 4
--- Post : [0-3] referent al proper a tirar.
+-- Pre : 0 <= [x && y] < 4 Donat el jugador actual (x) i la posisico del que ha guanyat la basa (y)
+-- Post : retorna el num de jugador que ha de començar la seguent basa [0-3].
 quiSortira :: Int -> Int -> Int
 quiSortira x y = (mod ( x + y)  4)
 
@@ -156,15 +156,15 @@ quiSortira x y = (mod ( x + y)  4)
 seguentJugador :: Int -> Int
 seguentJugador jugador = mod (jugador + 1) 4
 
--- Pre : Donada una basa, el jugador que l'ha començat i el jugador que volem saber que ha tirat
--- Post : Retorna la carta jugada per jugador sent comenca qui ha començat la basa
+-- Pre : Donada una basa, el jugador que l'ha començat i el jugador buscat
+-- Post : Retorna la carta que ha jugat el jugador que busquem
 cartaJugadorBasa :: [Carta] -> Int -> Int -> Carta
 cartaJugadorBasa (carta:pila) comenca jugador
   | comenca == jugador = carta
   | otherwise = cartaJugadorBasa pila (seguentJugador comenca) jugador
 
--- Pre : Mira si la primera carta mata a la segona
--- Post : Si la primera carta mata a la segona retorna true, false altrament, té en compte el trumfo de la partida.
+-- Pre : Donat el tumfu de la partida i dues cartes Mira si la primera carta mata a la segona
+-- Post : Retorna si la primera carta mata a la segona tinguent en compte el trumfu de la partida
 mata :: Trumfu -> Carta -> Carta  -> Bool
 mata trumfu (Carta tc1 pal1) (Carta tc2 pal2)
   | trumfu == Butifarra = (pal1 == pal2) && ((Carta tc1 pal1) < (Carta tc2 pal2))
@@ -192,20 +192,20 @@ cartaSeguentMajor (Carta x p)
   | x == Sota     = (Carta Cavall p)
   | x == Cavall   = (Carta Rei p)
 
--- Pre : Filtra les cartes d'un pal en concret
--- Post : Cartes de pal PalDemanat o llista buida.
+-- Pre : Donada una llista de cartes i un pal
+-- Post : Retorna les cartes de la llista que siguin del pal demanat
 cartesPal :: [Carta] -> Pal -> [Carta]
 cartesPal ll palDemanat = filter (\(Carta t p)->p == palDemanat) ll
 
--- Pre : Llista != []
--- Post : Retorna el pal guanyador donat llista de cartes i trumfo
+-- Pre : Llista != [] Donada una basa i el trumfu de la partida
+-- Post : Retorna el pal guanyador de la basa tinguent en compte el tumfu
 palGuanyadorBasa :: [Carta] -> Trumfu -> Pal
 palGuanyadorBasa [] trumfo = error "No em pots passar una llista buida animal! "
 palGuanyadorBasa ll Butifarra = head [ pal | (Carta t pal) <-ll ]
 palGuanyadorBasa ll (Pal trumfu) = if length (cartesPal ll trumfu) > 0 then trumfu else head [ pal | (Carta t pal) <-ll ]
 
--- Pre : Llista != []
--- Post : La carta i la posició guanyadora en forma de tupla
+-- Pre : Llista != [] Donada una basa i el trumfo de la partida
+-- Post : retorna una tupla amb la carta guanyadora i la posicio de la carta guanyadora a la basa
 quiGuanya :: [Carta] -> Trumfu -> (Carta, Int)
 quiGuanya [] trumfo = error "No em pots passar una llista buida Animal! "
 quiGuanya ll trumfo =  (cartaGuanyadora, (head [index | (index, carta) <- zip [0..] ll, carta == cartaGuanyadora]))
@@ -213,8 +213,8 @@ quiGuanya ll trumfo =  (cartaGuanyadora, (head [index | (index, carta) <- zip [0
     palGuanyador = palGuanyadorBasa ll trumfo
     cartaGuanyadora = maximum (cartesPal ll palGuanyador)
 
--- Pre : Rep posició del que guanya actualment i la meva posició.
--- Post : Retorna cert si s'ha de matar fals altrament
+-- Pre : Donada la posicio del jugador que guanya [0-3] i la posicio del jugador actual [0-3].
+-- Post : Retorna cert si el jugador actual ha de matar fals altrament (guanya el company del jugador actual)
 saDeMatar :: Int -> Int -> Bool
 saDeMatar posGuanya posMeu
   | posMeu - 2 >= 0 = posMeu - 2 /= posGuanya
@@ -225,8 +225,8 @@ saDeMatar posGuanya posMeu
 selecciona :: Bool -> [Carta] -> [Carta] -> [Carta]
 selecciona b l1 l2 = if b then l1 else l2
 
--- Pre :
--- Post :
+-- Pre : Donada la ma de jugador, el trumfu de la partida i la basa actual
+-- Post : Retorna les cartes que pot tirar el Jugador en funcio de la basa, el trumfu i les ma que tingui segons les normes de la Butifarra
 jugades :: [Carta] -> Trumfu -> [Carta] -> [Carta]
 jugades cartesJugador _ [] = cartesJugador
 jugades cartesJugador trumfu ll =
@@ -274,7 +274,7 @@ trampa ll trumfu pila jug =
     --    el boolea representa que la carta ha estat mal tirada (true)
     --    el Int el numero de jugador que l'ha tirat
 
--- Pre : Donat el trumfu la partida i qui ha començat [0-3] (S'ha d'haver jugat la partida sencera)
+-- Pre : Donat el trumfu la partida i el jugador que ha començat [0-3] (S'ha d'haver jugat la partida sencera)
 -- Post : Retorna les cartes guanyades de cada equip en forma de tupla ([cartes equip 1], [cartes equip 2])
 cartesGuanyades::  Trumfu -> [Carta] -> Int -> ([Carta],[Carta])
 cartesGuanyades trumfu [] jugador = ([],[])
@@ -323,8 +323,7 @@ reparteix mans cartes jugador = reparteix novaMans (drop 4 cartes) (seguentJugad
   -- s'ha de construir una nova llista de novaMans
   -- S'agafen les mans just abans del jugador, les del jugador i la resta de mans fins al Finalitzar
 
-tiraCartaBot :: [Carta] -> Trumfu -> [Carta] -> Carta
-tiraCartaBot ma trumfu basa = maximum (jugades ma trumfu basa)
+
 
 -- Pre : Donades les mans, el trumfu de la partida i qui comença a jugar
 -- Post : Genera una partida de butifarra amb el criteri qui s'expressa dins del where ( TODO : Canviar a bassant oriental o occidental)
@@ -345,6 +344,11 @@ esFerma partida (Carta tipus pal) = and [ elem x partida | x <- [(cartaSeguentMa
 ----------------------------------------------------------------------------------------------------------------------------------
 -- PRESUMPTA IA
 ----------------------------------------------------------------------------------------------------------------------------------
+
+-- Pre : Donada la ma del Bot, el trumfu de la partida i la basa actual
+-- Post : retorna la carta que tirarà el Bot segons l'estat de la basa actual
+tiraCartaBot :: [Carta] -> Trumfu -> [Carta] -> Carta
+tiraCartaBot ma trumfu basa = maximum (jugades ma trumfu basa)
 
 -- Pre : Donada la partida fins el moment i les cartes d'un jugador, el trumfu de la partida i si el trumfu l'ha fet el company
 -- Post : Retorna la carta més adient per realitzar una sortida.
@@ -387,7 +391,8 @@ escullCartaATirar partida ma [] trumfu primerJugador = escullMillorSortida parti
 ----------------------------------------------------------------------------------------------------------------------------------
 -- MONADES TESTING
 ----------------------------------------------------------------------------------------------------------------------------------
-
+-- Pre: Donada les mans dels jugadors
+-- Post: Pinta per pantalla la ma de cada jugador indicant també de qui es
 pintaMans mans = do
   putStrLn("## Ma del jugador 1 -> " ++ show (mans!!0))
   putStrLn("## Ma del jugador 2 -> " ++ show (mans!!1))
@@ -415,6 +420,8 @@ doTest textTitol numExplicacio mans trumfu partida jugador = do
 ----------------------------------------------------------------------------------------------------------------------------------
 -- MONADES MENUS
 ----------------------------------------------------------------------------------------------------------------------------------
+-- Pre : True
+-- Post : Pinta per pantalla el menú principal
 mostraMenu = do
   putStrLn("0 - Finalitzar Programa")
   putStrLn("1 - Remenar Baralla")
@@ -422,6 +429,8 @@ mostraMenu = do
   putStrLn("3 - Testos")
   putStrLn("4 - Jugar")
 
+-- Pre : True
+-- Post : Pinta per pantalla el menú de Testos
 mostraMenuTrampa = do
   putStrLn("0 - Sortir del menu Trampa")
   putStrLn("1 - No hi ha error test1")
@@ -445,8 +454,8 @@ pintaPuntsPartida partida punts = do
   putStrLn(separador)
 
 
--- Pre :
--- Post :
+-- Pre : Donada la ma del jugador, el trumfu de la partida la basa actual i si el jugador que ha de tirar es el real
+-- Post : Retorna la carta que vol tirar el jugador. Demanant-la al jugador real si es el cas o be fent que el bot en trii una
 tiraCarta :: [Carta] -> Trumfu -> [Carta] -> Bool -> IO (Carta)
 tiraCarta ma trumfu basa esJugadorReal = do
   if esJugadorReal then do
@@ -463,8 +472,8 @@ tiraCarta ma trumfu basa esJugadorReal = do
   else do
     return (tiraCartaBot ma trumfu basa)
 
--- Pre :
--- Post :
+-- Pre : Donades les mans dels jugadors, el trumfu, una llista amb l'ordre de tirada dels jugadors, la partida actual i el numero del jugador real [0-3]
+-- Post : Fa les accions pertinents per jugar cada mà. Retorna les cartes en ordre que s'han tirat durant la partida
 jugar :: [[Carta]] -> Trumfu -> [Int] -> [Carta] -> Int -> IO ([Carta])
 jugar [[],[],[],[]] _ _  partida _ = do return (partida)
 jugar mans trumfu llistaJugadors partida playerReal = do
@@ -483,29 +492,29 @@ jugar mans trumfu llistaJugadors partida playerReal = do
   else do
     jugar mans trumfu llistaJugadors (partida++[carta]) playerReal
 
--- Pre :
--- Post :
+-- Pre : Donada la ma del jugador
+-- Post : Retorna cert si dins la ma hi ha les cartes adients com per contrar
 pucContrar :: [Carta] -> Bool
 pucContrar ma = (length manilles) > 1
   where
     manilles = [ x | x <- ma , (\(Carta tp p) -> tp == Manilla) x ]
 
--- Pre :
--- Post :
+-- Pre : Donada la ma del jugador
+-- Post : Retorna cert si dins la ma hi ha les cartes adients per cantar Butifarra
 tincButifarra :: [Carta] -> Bool
 tincButifarra ma = (length asos) >= 1 && (length manilles) >= 2
   where
     asos = [ x | x <- ma , (\(Carta tp p) -> tp == As) x ]
     manilles = [ x | x <- ma , (\(Carta tp p) -> tp == Manilla) x ]
 
--- Pre :
--- Post :
+-- Pre : Doanda la ma del jugador
+-- Post : Retorna cert si dins la ma hi ha fallo o semifallo (0 o 1 sola carta d'un pal concret)
 tincSemiFalloOFallo :: [Carta] -> Bool
 tincSemiFalloOFallo ma = or [ (length y) <= 1 | y <- [ cartesPal ma x | x <- [(Oros)..(Bastos)]]]
 
 
--- Pre :
--- Post :
+-- Pre : Donada la ma del jugador, si el jugador es el real o no, i el multiplicador actual
+-- Post : Retorna Cert si el jugador actual diu que vol Contrar, Recontrar o fer Sant Vicenç. Si el jugador es el real li demanara per tecalt.
 escullContro :: [Carta] -> Bool -> Int -> IO (Bool)
 escullContro ma esReal multiplicador = do
   if esReal then do
@@ -523,8 +532,8 @@ escullContro ma esReal multiplicador = do
   else
     return (pucContrar ma)
 
--- Pre :
--- Post :
+-- Pre : Donades les mans dels jugadors, el jugador que ha de contrar [0-3], el jugador real[0-3], el multiplicador actual i el nombre de jugadors que estan d'acrod amb el que s'ha dit
+-- Post : Retorna el multiplicador de la partida segons si els jugadors han Contrat, Recontrat o han fet Sant Vicenç
 rodaContrar :: [[Carta]] -> Int -> Int -> Int -> Int -> IO (Int)
 rodaContrar mans quiContra jugadorReal multiplicador accepten = do
   if (multiplicador == 8) || (accepten == 2) then do return (multiplicador)
@@ -534,16 +543,17 @@ rodaContrar mans quiContra jugadorReal multiplicador accepten = do
       rodaContrar mans (seguentJugador quiContra) jugadorReal ((*) multiplicador 2) 0
     else
       rodaContrar mans (seguentJugador (seguentJugador quiContra)) jugadorReal multiplicador (accepten + 1)
--- Pre :
--- Post :
+
+-- Pre : Donadts els punts actuals dels equips en forma de tupla (puntsE1, puntsE2), els punts que han fet cada equip en forma de tupla (pE1, pE2) i el multiplicador e la partida
+-- Post : Retorna la nova puntuacio en forma de tupla (pE1, pE2) dels equips seguint els criteris del joc
 sumaResultat :: (Int,Int) -> (Int, Int) -> Int -> (Int, Int)
 sumaResultat (actualEq1, actualEq2) (resEq1, resEq2) multiplicador =
   (actualEq1 + ((*) (fst(diferencia)) multiplicador), actualEq2 + ((*) (snd(diferencia)) multiplicador))
   where
     diferencia = ((if (36 - resEq1) < 0 then 0 else (36 - resEq1)), (if (36 - resEq2) < 0 then 0 else (36 - resEq2)))
 
--- Pre :
--- Post :
+-- Pre : Donats els punts de la partida (pot ser nothing) els punts actuals dels equips, el multiplicador de la partida, el trumfu, les cartes que s'han tirat fins ara i el jugador que ha sortit primer de la partida
+-- Post : Retorna els punts totals guanyats fins ara sumats als punts de la partida actual. Es te en compte si hi ha agut trampa (Renuncio)
 generaResultat :: Maybe (Int, Int) -> (Int, Int) -> Int ->  [[Carta]] -> Trumfu -> [Carta] -> Int -> IO ((Int, Int))
 generaResultat puntsPartida punts multiplicador mans trumfu partida quiSurt = do
   if puntsPartida == Nothing then do
@@ -568,8 +578,8 @@ escullTrumfu ma obligat
   where
     maxPal = (\(Carta tp p)->(Pal p)) (head (snd (maximum [ (length y, y) | y <- [cartesPal ma x | x <- [(Oros)..(Bastos)] ] ] ) ) )
 
--- Pre :
--- Post :
+-- Pre : Donades les mans dels jugadors, el num de jugador que decideix [0-3], el jugador real [0-3] i si s'ha delegat
+-- Post : Retorna el trumfu que ha decidit el jugador que li toca o be nothing si creu que no pot fer trumfus i pot delegar
 decidirTrumfu :: [[Carta]] -> Int -> Int -> Bool -> IO (Maybe (Trumfu))
 decidirTrumfu mans quiDecideix jugadorReal saDelegat = do
   let company = (seguentJugador (seguentJugador (quiDecideix)))
