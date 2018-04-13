@@ -130,11 +130,7 @@ instance Show Pal where
   show Espases = "E"
   show Bastos = "B"
 
-data Trumfu = Butifarra | Pal Pal
-instance Eq Trumfu where
-  Butifarra == Butifarra  = True
-  Pal p1 == Pal p2        = p1 == p2
-  _ == _                  = False
+data Trumfu = Butifarra | Pal Pal deriving (Eq)
 instance Show Trumfu where
   show (Butifarra) = "Butifarra"
   show (Pal pal)   = show pal
@@ -170,11 +166,12 @@ baralla = [(Carta Dos Oros)..(Carta Manilla Bastos)]
 
 -- Pre : TODO: [ (seguentJugador (y+x))  | x <-[0..2]]
 -- Post :
-ronda:: Int -> [Int] -> [Int]
-ronda primer llista = if (length llista) < 4 then  (ronda jugador novaLlista) else llista
- where
-   jugador = seguentJugador primer
-   novaLlista =llista ++ [jugador]
+ronda:: Int -> [Int]
+ronda primer = primer:[ (seguentJugador (primer+x)) | x <-[0..2]]
+--ronda primer llista = if (length llista) < 4 then  (ronda jugador novaLlista) else llista
+-- where
+--   jugador = seguentJugador primer
+--   novaLlista =llista ++ [jugador]
 
 
 -- Pre : Donat un nombre n i una llista d'elements
@@ -270,7 +267,7 @@ saDeMatar posGuanya posMeu
 
 -- Pre : Donada una condició i dues llistes
 -- Post : Escull l1 si b i l2 si no b
-selecciona :: Bool -> [Carta] -> [Carta] -> [Carta]
+selecciona :: Bool -> [a] -> [a] -> [a]
 selecciona b l1 l2 = if b then l1 else l2
 
 -- Pre : Donada la ma de jugador, el trumfu de la partida i la basa actual
@@ -388,6 +385,44 @@ generarPartida mans trumfu jug = basa ++ generarPartida (extreu mans basa jug) t
 esFerma :: [Carta] -> Carta -> Bool
 esFerma partida (Carta Manilla pal) = True
 esFerma partida (Carta tipus pal) = and [ elem x partida | x <- [(cartaSeguentMajor (Carta tipus pal))..(Carta Manilla pal)]]
+
+-- Pre : Donada la ma del jugador
+-- Post : Retorna cert si dins la ma hi ha les cartes adients com per contrar
+pucContrar :: [Carta] -> Bool
+pucContrar ma = (length manilles) > 1
+  where
+    manilles = [ x | x <- ma , (\(Carta tp p) -> tp == Manilla) x ]
+
+-- Pre : Donada la ma del jugador
+-- Post : Retorna cert si dins la ma hi ha les cartes adients per cantar Butifarra
+tincButifarra :: [Carta] -> Bool
+tincButifarra ma = (length asos) >= 1 && (length manilles) >= 2
+  where
+    asos = [ x | x <- ma , (\(Carta tp p) -> tp == As) x ]
+    manilles = [ x | x <- ma , (\(Carta tp p) -> tp == Manilla) x ]
+
+-- Pre : Doanda la ma del jugador
+-- Post : Retorna cert si dins la ma hi ha fallo o semifallo (0 o 1 sola carta d'un pal concret)
+tincSemiFalloOFallo :: [Carta] -> Bool
+tincSemiFalloOFallo ma = or [ (length y) <= 1 | y <- [ cartesPal ma x | x <- [(Oros)..(Bastos)]]]
+
+-- Pre : Donadts els punts actuals dels equips en forma de tupla (puntsE1, puntsE2), els punts que han fet cada equip en forma de tupla (pE1, pE2) i el multiplicador e la partida
+-- Post : Retorna la nova puntuacio en forma de tupla (pE1, pE2) dels equips seguint els criteris del joc
+sumaResultat :: (Int,Int) -> (Int, Int) -> Int -> (Int, Int)
+sumaResultat (actualEq1, actualEq2) (resEq1, resEq2) multiplicador =
+  (actualEq1 + ((*) (fst(diferencia)) multiplicador), actualEq2 + ((*) (snd(diferencia)) multiplicador))
+  where
+    diferencia = ((if (36 - resEq1) < 0 then 0 else (36 - resEq1)), (if (36 - resEq2) < 0 then 0 else (36 - resEq2)))
+
+-- Pre : Donada una ma i si està o no obligat a fer trumfu
+-- Post : retorna nothing si pot no fer-ho i no ho fa o El trumfu escollit.
+escullTrumfu :: [Carta] -> Bool -> Maybe (Trumfu)
+escullTrumfu ma obligat
+  | tincButifarra ma = Just (Butifarra)
+  | obligat || (tincSemiFalloOFallo ma) = Just maxPal
+  | otherwise = Nothing
+  where
+    maxPal = (\(Carta tp p)->(Pal p)) (head (snd (maximum [ (length y, y) | y <- [cartesPal ma x | x <- [(Oros)..(Bastos)] ] ] ) ) )
 
 ----------------------------------------------------------------------------------------------------------------------------------
 -- PRESUMPTA IA
@@ -537,30 +572,9 @@ jugar mans trumfu llistaJugadors partida playerReal = do
   if (llistaJugadors!!3) == quiTira then do
     let guanyador = properATirar novaBasa trumfu (head llistaJugadors)
     putStrLn( "La basa final es " ++ (show novaBasa) ++ " i el que ha guanyat es " ++ (show guanyador))
-    jugar (extreu mans (novaBasa) (head llistaJugadors)) trumfu (ronda guanyador [guanyador]) (partida++[carta]) playerReal
+    jugar (extreu mans (novaBasa) (head llistaJugadors)) trumfu (ronda guanyador) (partida++[carta]) playerReal
   else do
     jugar mans trumfu llistaJugadors (partida++[carta]) playerReal
-
--- Pre : Donada la ma del jugador
--- Post : Retorna cert si dins la ma hi ha les cartes adients com per contrar
-pucContrar :: [Carta] -> Bool
-pucContrar ma = (length manilles) > 1
-  where
-    manilles = [ x | x <- ma , (\(Carta tp p) -> tp == Manilla) x ]
-
--- Pre : Donada la ma del jugador
--- Post : Retorna cert si dins la ma hi ha les cartes adients per cantar Butifarra
-tincButifarra :: [Carta] -> Bool
-tincButifarra ma = (length asos) >= 1 && (length manilles) >= 2
-  where
-    asos = [ x | x <- ma , (\(Carta tp p) -> tp == As) x ]
-    manilles = [ x | x <- ma , (\(Carta tp p) -> tp == Manilla) x ]
-
--- Pre : Doanda la ma del jugador
--- Post : Retorna cert si dins la ma hi ha fallo o semifallo (0 o 1 sola carta d'un pal concret)
-tincSemiFalloOFallo :: [Carta] -> Bool
-tincSemiFalloOFallo ma = or [ (length y) <= 1 | y <- [ cartesPal ma x | x <- [(Oros)..(Bastos)]]]
-
 
 -- Pre : Donada la ma del jugador, si el jugador es el real o no, i el multiplicador actual
 -- Post : Retorna Cert si el jugador actual diu que vol Contrar, Recontrar o fer Sant Vicenç. Si el jugador es el real li demanara per tecalt.
@@ -593,13 +607,6 @@ rodaContrar mans quiContra jugadorReal multiplicador accepten = do
     else
       rodaContrar mans (seguentJugador (seguentJugador quiContra)) jugadorReal multiplicador (accepten + 1)
 
--- Pre : Donadts els punts actuals dels equips en forma de tupla (puntsE1, puntsE2), els punts que han fet cada equip en forma de tupla (pE1, pE2) i el multiplicador e la partida
--- Post : Retorna la nova puntuacio en forma de tupla (pE1, pE2) dels equips seguint els criteris del joc
-sumaResultat :: (Int,Int) -> (Int, Int) -> Int -> (Int, Int)
-sumaResultat (actualEq1, actualEq2) (resEq1, resEq2) multiplicador =
-  (actualEq1 + ((*) (fst(diferencia)) multiplicador), actualEq2 + ((*) (snd(diferencia)) multiplicador))
-  where
-    diferencia = ((if (36 - resEq1) < 0 then 0 else (36 - resEq1)), (if (36 - resEq2) < 0 then 0 else (36 - resEq2)))
 
 -- Pre : Donats els punts de la partida (pot ser nothing) els punts actuals dels equips, el multiplicador de la partida, el trumfu, les cartes que s'han tirat fins ara i el jugador que ha sortit primer de la partida
 -- Post : Retorna els punts totals guanyats fins ara sumats als punts de la partida actual. Es te en compte si hi ha agut trampa (Renuncio)
@@ -617,15 +624,6 @@ generaResultat puntsPartida punts multiplicador mans trumfu partida quiSurt = do
     let aSumar = (\(Just t)->t) puntsPartida
     return (sumaResultat punts aSumar multiplicador)
 
--- Pre : Donada una ma i si està o no obligat a fer trumfu
--- Post : retorna nothing si pot no fer-ho i no ho fa o El trumfu escollit.
-escullTrumfu :: [Carta] -> Bool -> Maybe (Trumfu)
-escullTrumfu ma obligat
-  | tincButifarra ma = Just (Butifarra)
-  | obligat || (tincSemiFalloOFallo ma) = Just maxPal
-  | otherwise = Nothing
-  where
-    maxPal = (\(Carta tp p)->(Pal p)) (head (snd (maximum [ (length y, y) | y <- [cartesPal ma x | x <- [(Oros)..(Bastos)] ] ] ) ) )
 
 -- Pre : Donades les mans dels jugadors, el num de jugador que decideix [0-3], el jugador real [0-3] i si s'ha delegat
 -- Post : Retorna el trumfu que ha decidit el jugador que li toca o be nothing si creu que no pot fer trumfus i pot delegar
@@ -675,7 +673,7 @@ partidaNova barallaCartes punts jugadorBarreja ra jugadorReal = do
     putStrLn("## S'ha fet trumfus : " ++ (show trumfu))
     multiplicador <- rodaContrar mans quiSurt jugadorReal (if trumfu == Butifarra then 2 else 1) 0
     putStrLn("## S'aplicarà el multiplicador : " ++ (show multiplicador))
-    partida <- jugar mans trumfu ((ronda quiSurt [quiSurt])) [] jugadorReal
+    partida <- jugar mans trumfu ((ronda quiSurt)) [] jugadorReal
     resultatFinal <- generaResultat (puntsParelles mans trumfu partida quiSurt) punts multiplicador mans trumfu partida quiSurt
     pintaPuntsPartida partida resultatFinal
     partidaNova barallaCartes resultatFinal (seguentJugador jugadorBarreja) ra jugadorReal
