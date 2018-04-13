@@ -540,11 +540,13 @@ pintaPuntsPartida partida punts = do
 
 -- Pre : Donada la ma del jugador, el trumfu de la partida la basa actual i si el jugador que ha de tirar es el real
 -- Post : Retorna la carta que vol tirar el jugador. Demanant-la al jugador real si es el cas o be fent que el bot en trii una
-tiraCarta :: [Carta] -> Trumfu -> [Carta] -> Bool -> IO (Carta)
-tiraCarta ma trumfu basa esJugadorReal = do
+tiraCarta :: [[Carta]] -> Int -> Int -> Trumfu -> [Carta] -> Bool -> IO (Carta)
+tiraCarta mans quiTira quiHaTiratPrimer trumfu basa esJugadorReal = do
+  let ma = mans!!quiTira
   if esJugadorReal then do
     putStrLn("Basa actual:")
-    putStrLn( show basa)
+    putStrLn((mostraBasa quiTira (montaBasaPerMostrar quiHaTiratPrimer basa) (show trumfu)))
+    --putStrLn( show basa)
     putStrLn( "Les teves cartes:")
     putStrLn( show (ma) )
     putStrLn("Tira una carta")
@@ -556,6 +558,24 @@ tiraCarta ma trumfu basa esJugadorReal = do
   else do
     return (tiraCartaBot ma trumfu basa)
 
+completaBasaAmbNulls :: [String] -> [String]
+completaBasaAmbNulls x
+  | (length x) == 4 = x
+  | otherwise = completaBasaAmbNulls (x ++ ["  "])
+
+
+mouCartesAlFinal :: Int -> [String] -> [String]
+mouCartesAlFinal 0 ll = ll
+mouCartesAlFinal pos (x:xs) = mouCartesAlFinal (pos - 1) (xs ++ [x])
+
+montaBasaPerMostrar :: Int -> [Carta] -> [String]
+montaBasaPerMostrar quiTira cartes = mouCartesAlFinal (4 - quiTira) cartesComStringBasaCompleta
+  where
+    cartesComStrings = [(show y) | y <- cartes ]
+    cartesComStringBasaCompleta = completaBasaAmbNulls cartesComStrings
+
+
+
 -- Pre : Donades les mans dels jugadors, el trumfu, una llista amb l'ordre de tirada dels jugadors, la partida actual i el numero del jugador real [0-3]
 -- Post : Fa les accions pertinents per jugar cada mà. Retorna les cartes en ordre que s'han tirat durant la partida
 jugar :: [[Carta]] -> Trumfu -> [Int] -> [Carta] -> Int -> IO ([Carta])
@@ -565,7 +585,7 @@ jugar mans trumfu llistaJugadors partida playerReal = do
   let quiTira = (llistaJugadors!!(mod (length partida) 4))
   let quiTirara = (seguentJugador quiTira)
   let basa = lastN (mod (length partida) 4) partida
-  carta <- (tiraCarta (mans!!quiTira) trumfu basa (quiTira==playerReal))
+  carta <- (tiraCarta mans quiTira (head llistaJugadors) trumfu basa (quiTira==playerReal))
   let novaBasa = basa++[carta]
   putStrLn("El jugador " ++ (show quiTira) ++ " tira " ++ (show carta))
 
@@ -738,7 +758,7 @@ programa barallaCartes ra = do
     menuTrampes
     programa barallaCartes ra
   else if numOpcio == 4 then do
-    partidaNova barallaCartes (0,0) 0 ra 1
+    partidaNova barallaCartes (0,0) 0 ra 0
     main
   else do
     putStrLn("Opcio incorrecte")
