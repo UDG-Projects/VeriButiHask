@@ -1,0 +1,199 @@
+
+[
+  [Carta Cavall Espases, Carta Rei Oros, Carta Quatre Espases, Carta Set Copes, Carta As Espases, Carta Manilla Espases, Carta Manilla Bastos, Carta Sota Oros, Carta Vuit Copes, Carta As Copes, Carta Cinc Oros, Carta Sota Bastos]
+  , [Carta Dos Copes, Carta Quatre Copes, Carta Manilla Oros, Carta Cavall Oros, Carta Rei Copes, Carta Cinc Espases, Carta Vuit Espases, Carta Dos Oros, Carta As Oros, Carta Sota Copes, Carta Sis Bastos, Carta Quatre Oros]
+  , [Carta Vuit Bastos, Carta Set Espases, Carta Set Oros, Carta Tres Copes, Carta Sota Espases, Carta Tres Bastos, Carta Set Bastos, Carta Vuit Oros, Carta Cinc Copes, Carta As Bastos, Carta Dos Bastos, Carta Rei Bastos]
+  , [Carta Sis Oros, Carta Tres Espases, Carta Tres Oros, Carta Manilla Copes, Carta Cavall Copes, Carta Rei Espases, Carta Cavall Bastos, Carta Dos Espases, Carta Sis Espases, Carta Quatre Bastos, Carta Sis Copes, Carta Cinc Bastos]
+]
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- test1
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+Reparteix = 2
+Surt = 3
+Fa trunfus = 2
+Trunfus = Oros
+[
+ Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Sis Bastos,
+ Carta Sota Bastos, Carta Dos Oros, Carta Dos Bastos, Carta Quatre Bastos,
+ Carta Manilla Oros, Carta Set Oros, Carta Tres Oros, Carta Cinc Oros,
+ Carta As Oros, Carta Vuit Oros, Carta Sis Oros, Carta Sota Oros,
+ Carta Quatre Oros, Carta Tres Copes, Carta Dos Espases, Carta Rei Oros,
+ Carta Manilla Espases, Carta Cinc Espases, Carta Set Espases, Carta Tres Espases,
+ Carta As Espases, Carta Vuit Espases, Carta Sota Espases, Carta Sis Espases,
+ Carta Vuit Copes, Carta Rei Copes, Carta Cinc Copes, Carta Cavall Copes,
+ Carta Sota Copes, Carta Tres Bastos, Carta Manilla Copes, Carta Set Copes,
+ Carta Rei Espases, Carta Quatre Espases, Carta Dos Copes, Carta Set Bastos,
+ Carta Cinc Bastos, Carta Cavall Espases, Carta Quatre Copes, Carta As Bastos,
+ Carta Rei Bastos, Carta Sis Copes, Carta As Copes, Carta Cavall Oros
+]
+Equip J1 J3 punts = 31
+Equip J2 J4 punts = 41
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- test2
+----------------------------------------------------------------------------------------------------------------------------------
+Reparteix = 1
+Surt = 2
+Fa trunfus = 1
+Trunfus = Butifarra
+[
+  Carta Sota Copes, Carta Tres Copes, Carta Manilla Copes, Carta Set Copes
+  , Carta Sis Copes, Carta As Copes, Carta Dos Copes, Carta Cinc Copes
+  , Carta Sota Oros, Carta Manilla Oros, Carta Set Oros, Carta Tres Oros
+  , Carta As Oros, Carta Vuit Oros, Carta Sis Oros, Carta Cinc Oros
+  , Carta Rei Copes, Carta Set Espases, Carta Cavall Copes, Carta Vuit Copes
+  , Carta Quatre Copes, Carta Dos Bastos, Carta Cavall Bastos, Carta Quatre Espases
+  , Carta Quatre Oros, Carta Tres Bastos, Carta Quatre Bastos, Carta Rei Oros
+  , Carta Manilla Espases, Carta Cinc Espases, Carta Sota Espases, Carta Dos Espases
+  , Carta As Espases, Carta Vuit Espases, Carta As Bastos, Carta Tres Espases
+  , Carta Manilla Bastos, Carta Sis Bastos, Carta Set Bastos, Carta Cinc Bastos
+  , Carta Sota Bastos, Carta Dos Oros, Carta Rei Bastos, Carta Sis Espases
+  , Carta Vuit Bastos, Carta Rei Espases, Carta Cavall Espases, Carta Cavall Oros
+]
+Equip J1 J3 punts = 44
+Equip J2 J4 punts = 28
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- capot
+----------------------------------------------------------------------------------------------------------------------------------
+Reparteix = 3
+Surt = 4
+Fa trunfus = 3
+Trunfus = Bastos
+[
+ Carta Rei Espases, Carta Manilla Espases, Carta Cinc Espases, Carta Sota Espases
+ , Carta Manilla Bastos, Carta Sis Bastos, Carta Dos Bastos, Carta Quatre Bastos
+ , Carta Sota Bastos, Carta Dos Copes, Carta As Bastos, Carta Cinc Bastos
+ , Carta Rei Bastos, Carta Cavall Bastos, Carta Rei Oros, Carta Vuit Espases
+ , Carta Set Espases, Carta Dos Espases, Carta As Espases, Carta Manilla Oros
+ , Carta Cavall Espases, Carta As Oros, Carta Tres Copes, Carta Sis Espases
+ , Carta Quatre Espases, Carta Cavall Oros, Carta Cinc Copes, Carta Tres Espases
+ , Carta Sota Oros, Carta Dos Oros, Carta Set Oros, Carta Tres Oros
+ , Carta Cinc Oros, Carta Quatre Oros, Carta Vuit Oros, Carta Sis Oros
+ , Carta Tres Bastos, Carta Sis Copes, Carta Set Copes, Carta Quatre Copes
+ , Carta Set Bastos, Carta Cavall Copes, Carta As Copes, Carta Sota Copes
+ , Carta Vuit Bastos, Carta Manilla Copes, Carta Vuit Copes, Carta Rei Copes
+]
+Equip J1 J3 punts =
+Equip J2 J4 punts =
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- Falla de Gallina
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+Reparteix = 2
+Surt = 3
+Fa trunfus = 2
+Trunfus = Oros
+[
+ Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Dos Oros,
+ Carta Sota Bastos, Carta Sis Bastos, Carta Dos Bastos, Carta Quatre Bastos,
+ Carta Manilla Oros, Carta Set Oros, Carta Tres Oros, Carta Cinc Oros,
+ Carta As Oros, Carta Vuit Oros, Carta Sis Oros, Carta Sota Oros,
+ Carta Quatre Oros, Carta Tres Copes, Carta Dos Espases, Carta Rei Oros,
+ Carta Manilla Espases, Carta Cinc Espases, Carta Set Espases, Carta Tres Espases,
+ Carta As Espases, Carta Vuit Espases, Carta Sota Espases, Carta Sis Espases,
+ Carta Vuit Copes, Carta Rei Copes, Carta Cinc Copes, Carta Cavall Copes,
+ Carta Sota Copes, Carta Tres Bastos, Carta Manilla Copes, Carta Set Copes,
+ Carta Rei Espases, Carta Quatre Espases, Carta Dos Copes, Carta Set Bastos,
+ Carta Cinc Bastos, Carta Cavall Espases, Carta Quatre Copes, Carta As Bastos,
+ Carta Rei Bastos, Carta Sis Copes, Carta As Copes, Carta Cavall Oros
+]
+Equip J1 J3 punts = Nothing
+Equip J2 J4 punts = Nothing
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- Refalla de Gallina
+----------------------------------------------------------------------------------------------------------------------------------
+
+Reparteix = 2
+Surt = 3
+Fa trunfus = 2
+Trunfus = Oros
+[
+ Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Sis Bastos,
+ Carta Sota Bastos, Carta Dos Oros, Carta Vuit Oros, Carta Quatre Bastos,
+ Carta Manilla Oros, Carta Set Oros, Carta Tres Oros, Carta Cinc Oros,
+ Carta As Oros, Carta Dos Bastos, Carta Sis Oros, Carta Sota Oros,
+ Carta Quatre Oros, Carta Tres Copes, Carta Dos Espases, Carta Rei Oros,
+ Carta Manilla Espases, Carta Cinc Espases, Carta Set Espases, Carta Tres Espases,
+ Carta As Espases, Carta Vuit Espases, Carta Sota Espases, Carta Sis Espases,
+ Carta Vuit Copes, Carta Rei Copes, Carta Cinc Copes, Carta Cavall Copes,
+ Carta Sota Copes, Carta Tres Bastos, Carta Manilla Copes, Carta Set Copes,
+ Carta Rei Espases, Carta Quatre Espases, Carta Dos Copes, Carta Set Bastos,
+ Carta Cinc Bastos, Carta Cavall Espases, Carta Quatre Copes, Carta As Bastos,
+ Carta Rei Bastos, Carta Sis Copes, Carta As Copes, Carta Cavall Oros
+]
+Equip J1 J3 punts = Nothing
+Equip J2 J4 punts = Nothing
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- S'escapen
+----------------------------------------------------------------------------------------------------------------------------------
+
+[
+  [Carta Cavall Espases, Carta Rei Oros, Carta Quatre Espases, Carta Set Copes, Carta As Espases, Carta Manilla Espases, Carta Manilla Bastos, Carta Sota Oros, Carta Vuit Copes, Carta As Copes, Carta Cinc Oros, Carta Sota Bastos]
+  ,
+  [Carta Dos Bastos, Carta Quatre Copes, Carta Manilla Oros, Carta Cavall Oros, Carta Manilla Copes, Carta Cinc Espases, Carta Vuit Espases, Carta Dos Oros, Carta As Oros, Carta Sota Copes, Carta Sis Bastos, Carta Quatre Oros]
+  ,
+  [Carta Vuit Bastos, Carta Set Espases, Carta Set Oros, Carta Tres Copes, Carta Sota Espases, Carta Tres Bastos, Carta Set Bastos, Carta Vuit Oros, Carta Cinc Copes, Carta As Bastos, Carta Dos Copes, Carta Rei Bastos]
+  ,
+  [Carta Sis Oros, Carta Tres Espases, Carta Tres Oros, Carta Rei Copes, Carta Cavall Copes, Carta Rei Espases, Carta Cavall Bastos, Carta Dos Espases, Carta Sis Espases, Carta Quatre Bastos, Carta Sis Copes, Carta Cinc Bastos]]
+
+Reparteix = 2
+Surt = 3
+Fa trunfus = 2
+Trunfus = Oros
+[
+ Carta Vuit Bastos, Carta Cavall Bastos, Carta Manilla Bastos, Carta Dos Bastos
+ , Carta Sota Bastos, Carta Sis Bastos, Carta As Bastos, Carta Quatre Bastos
+ , Carta Cinc Copes, Carta Cavall Copes, Carta Set Copes, Carta Manilla Copes
+ , Carta Manilla Oros, Carta Set Oros, Carta Tres Oros, Carta Cinc Oros
+ , Carta As Oros, Carta Vuit Oros, Carta Sis Oros, Carta Sota Oros
+ , Carta Sota Copes, Carta Dos Copes, Carta Rei Copes, Carta As Copes
+ , Carta Manilla Espases, Carta Cinc Espases, Carta Set Espases, Carta Dos Espases
+ , Carta As Espases, Carta Vuit Espases, Carta Sota Espases, Carta Tres Espases
+ , Carta Cavall Espases, Carta Dos Oros, Carta Tres Espases, Carta Rei Espases
+ , Carta Quatre Oros, Carta Tres Bastos, Carta Cinc Bastos, Carta Rei Oros
+ , Carta Quatre Espases, Carta Cavall Oros, Carta Set Bastos, Carta Sis Espases
+ , Carta Quatre Copes, Carta Rei Bastos, Carta Sis Copes, Carta Vuit Copes]
+
+Equip J1 J3 punts = Nothing
+Equip J2 J4 punts = Nothing
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+-- Prova Jugar Partida Amb Màquina
+----------------------------------------------------------------------------------------------------------------------------------
+ma Jugada
+[
+  [Carta Cavall Bastos, Carta Cavall Copes, Carta Manilla Oros, Carta Cinc Espases, Carta As Espases, Carta Dos Oros, Carta Dos Bastos, Carta Dos Espases, Carta Sis Oros, Carta Set Bastos, Carta Sis Copes, Carta Set Oros],
+  [Carta As Bastos, Carta Vuit Copes, Carta Vuit Oros, Carta Manilla Espases, Carta Rei Espases, Carta Cinc Oros, Carta Sota Bastos, Carta Sota Espases, Carta Quatre Oros, Carta Cinc Bastos, Carta Dos Copes, Carta Tres Oros],
+  [Carta Manilla Bastos, Carta Manilla Copes, Carta As Oros, Carta Set Espases, Carta Sis Espases, Carta Rei Oros, Carta Quatre Bastos, Carta Rei Copes, Carta Sota Oros, Carta Tres Bastos, Carta Sota Copes, Carta Set Copes],
+  [Carta Rei Bastos, Carta As Copes, Carta Cavall Oros, Carta Cavall Espases, Carta Vuit Espases, Carta Cinc Copes, Carta Vuit Bastos, Carta Quatre Espases, Carta Quatre Copes, Carta Sis Bastos, Carta Tres Copes, Carta Tres Espases]
+]
+
+
+Reparteix = 2
+Surt = 3
+Fa Trumfus = 2
+Trumfus = copes
+
+[ Carta Manilla Bastos, Carta Rei Bastos, Carta Cavall Bastos ,Carta As Bastos
+  , Carta Manilla Copes , Carta As Copes ,Carta Cavall Copes, Carta Vuit Copes
+  , Carta As Oros, Carta Cavall Oros ,Carta Manilla Oros, Carta Vuit Oros
+  , Carta Cinc Espases, Carta Manilla Espases, Carta Set Espases ,Carta Cavall Espases
+  , Carta Rei Espases, Carta Sis Espases, Carta Vuit Espases, Carta As Espases
+  , Carta Dos Oros, Carta Cinc Oros, Carta Rei Oros, Carta Cinc Copes
+  , Carta Vuit Bastos, Carta Dos Bastos, Carta Sota Bastos, Carta Quatre Bastos
+  , Carta Sota Espases, Carta Rei Copes ,Carta Quatre Espases,Carta Dos Espases
+  , Carta Sota Oros,Carta Quatre Copes,Carta Sis Oros,Carta Quatre Oros
+  , Carta Sis Bastos,Carta Set Bastos,Carta Cinc Bastos,Carta Tres Bastos
+  , Carta Sis Copes,Carta Dos Copes,Carta Sota Copes ,Carta Tres Copes
+  , Carta Set Copes, Carta Tres Espases,Carta Set Oros,Carta Tres Oros]
