@@ -2026,3 +2026,9 @@ La col·laboració entre nosaltres ha sigut constant, la pràctica l'hem fet els
 La documentació està feta en Markdown i generada amb pandoc (utilitza latex) i es fa servir la plantilla [einvogel](https://github.com/Wandmalfarbe/pandoc-latex-template).
 
 Per a la implementació de la pràctica i com a repositori s'ha fet servir git allotjat a [bitbucket](http://bitbucket.org).
+
+Per generar l'informe es realitza la següent instrucció :
+
+```bash
+pandoc README.md -o README.pdf --from markdown --template eisvogel --listings --latex-engine=xelatex
+```
